@@ -9,37 +9,64 @@ import numpy as np
 import scipy.io as scio
 import matplotlib
 import cv2 as cv
-from skimage import data, color, img_as_ubyte
+from skimage import data, color, img_as_ubyte, util
 from skimage.feature import canny
 from skimage.transform import hough_ellipse
 from skimage.draw import ellipse_perimeter
+from staff_detection import detect_staff_lines, find_staff_distance, process_image
+from sorin_cheat_staff_removal import staff_removal
 
 import matplotlib
 matplotlib.use("TkAgg")
 
 
 def main():
-    #image1_file = "../data/easy.png"
 
-    # image1_color = img_as_float32(io.imread(image1_file))
-    # image1 = rgb2gray(image1_color)
-    # scale_factor = 0.5
-    # image1 = np.float32(rescale(image1, scale_factor))
+    # img = util.invert(process_image('../midi_conversion/data/fuzzy-wuzzy.png'))
+    # staffs = detect_staff_lines(img)
+    # dist = int(find_staff_distance(staffs))
 
-    # implot = plt.imshow(image1_color)
+    # img = cv.imread('../midi_conversion/data/fuzzy-wuzzy.png', 0)
+    img = staff_removal('../midi_conversion/data/fuzzy-wuzzy.png')
+    img = resize_percentage(img, 200, 200)
+    # blob_detection(img)
 
-    # # put a blue dot at (10, 20)
-    # plt.scatter([10], [20])
+    circle_detection(img)
+    return
 
-    # # put a red dot, size 40, at 2 locations:
-    # plt.scatter(x=[30, 40], y=[50, 60], c='r', s=40)
 
-    # plt.show()
+def resize_percentage(img, width_percent, height_percent):
+    width = int(img.shape[1] * width_percent / 100)
+    height = int(img.shape[0] * height_percent / 100)
+    dim = (width, height)
+    # resize image
+    img = cv.resize(img, dim, interpolation=cv.INTER_AREA)
+    return img
 
-    img = cv.imread('../data/easy.png', 0)
+
+def blob_detection(im):
+    # Read image
+    # im = cv.cvtColor(im, cv.COLOR_BGR2GRAY)
+    # Set up the detector with default parameters.
+    detector = cv.SimpleBlobDetector_create()
+
+    # Detect blobs.
+    keypoints = detector.detect(im)
+
+    # Draw detected blobs as red circles.
+    # cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of blob
+    im_with_keypoints = cv.drawKeypoints(im, keypoints, np.array(
+        []), (0, 0, 255), cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+    # Show keypoints
+    cv.imshow("Keypoints", im_with_keypoints)
+    cv.waitKey(0)
+
+
+def circle_detection(img):
     img = cv.medianBlur(img, 5)
     cimg = cv.cvtColor(img, cv.COLOR_GRAY2BGR)
-    circles = cv.HoughCircles(img, cv.HOUGH_GRADIENT, 1, 20,
+    circles = cv.HoughCircles(img, cv.HOUGH_GRADIENT, 1, 40,
                               param1=50, param2=30, minRadius=0, maxRadius=100)
     circles = np.uint16(np.around(circles))
     for i in circles[0, :]:
@@ -50,44 +77,6 @@ def main():
     cv.imshow('detected circles', cimg)
     cv.waitKey(0)
     cv.destroyAllWindows()
-
-    # Load picture, convert to grayscale and detect edges
-    # image_rgb = img_as_float32(io.imread(image1_file))
-    # image_gray = color.rgb2gray(image_rgb)
-    # edges = canny(image_gray, sigma=2.0,
-    #               low_threshold=0.55, high_threshold=0.8)
-
-    # # Perform a Hough Transform
-    # # The accuracy corresponds to the bin size of a major axis.
-    # # The value is chosen in order to get a single high accumulator.
-    # # The threshold eliminates low accumulators
-    # result = hough_ellipse(edges, accuracy=20, threshold=250,
-    #                        min_size=0, max_size=100)
-    # result.sort(order='accumulator')
-
-    # # Estimated parameters for the ellipse
-    # best = list(result[-1])
-    # yc, xc, a, b = [int(round(x)) for x in best[1:5]]
-    # orientation = best[5]
-
-    # # Draw the ellipse on the original image
-    # cy, cx = ellipse_perimeter(yc, xc, a, b, orientation)
-    # image_rgb[cy, cx] = (0, 0, 255)
-    # # Draw the edge (white) and the resulting ellipse (red)
-    # edges = color.gray2rgb(img_as_ubyte(edges))
-    # edges[cy, cx] = (250, 0, 0)
-
-    # fig2, (ax1, ax2) = plt.subplots(ncols=2, nrows=1, figsize=(8, 4),
-    #                                 sharex=True, sharey=True)
-
-    # ax1.set_title('Original picture')
-    # ax1.imshow(image_rgb)
-
-    # ax2.set_title('Edge (white) and result (red)')
-    # ax2.imshow(edges)
-
-    # plt.show()
-    return
 
 
 if __name__ == '__main__':

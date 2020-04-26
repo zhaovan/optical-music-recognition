@@ -19,6 +19,7 @@ def visualize_notes(im, features, staffs, matched_staffs, pitches, staff_dist):
     for i in range(features.shape[0]):
         feature = features[i]
         x, y, length, type = feature
+        x, y, length = float(x), float(y), float(length)
         highest_line = np.max(staffs[matched_staffs[i].astype(int)])
         staff_line = pitches[i]
 

@@ -4,7 +4,7 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 import numpy as np
 from skimage import color, util, filters, feature
-from image_operations import \
+from utility.image_operations import \
     load_image, \
     save_image, \
     show_image, \
@@ -41,6 +41,7 @@ def find_feature_staffs(features, staffs):
     matched_staffs = np.zeros(features.shape[0])
     for f in range(features.shape[0]):
         _, y, _, _ = features[f]
+        y = float(y)
         staff_dists = np.sum(np.absolute(staffs - y), axis=1)
         matched_staffs[f] = np.argmin(staff_dists)
     return matched_staffs
@@ -64,6 +65,8 @@ def find_pitches(features, staffs, matched_staffs):
         staff = staffs[matched_staffs[f].astype(int)]
         highest_line = np.max(staff)
         _, y, _, _ = features[f]
+        y = float(y)
+
         staff_line = -np.round((y - highest_line) / staff_dist)
         matched_pitches[f] = staff_line
 
@@ -71,7 +74,7 @@ def find_pitches(features, staffs, matched_staffs):
 
 def construct_note(feature, pitch):
     _, _, length, type = feature
-    return (type, length, pitch)
+    return (type, float(length), float(pitch))
 
 def construct_notes(features, staffs, matched_staffs, pitches):
     notes = []
@@ -80,7 +83,10 @@ def construct_notes(features, staffs, matched_staffs, pitches):
     num_notes = 0
     for i in range(num_staffs):
         notes_indices = np.where(matched_staffs == i)
-        sorted_notes_indices = np.argsort(features[notes_indices])
+
+        feature_x = features[notes_indices, 0][0]
+        feature_x = [float(x) for x in feature_x]
+        sorted_notes_indices = np.argsort(feature_x)
 
         these_pitches = (pitches[notes_indices])[sorted_notes_indices]
         these_features = (features[notes_indices])[sorted_notes_indices]

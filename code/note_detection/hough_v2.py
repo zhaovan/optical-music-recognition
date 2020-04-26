@@ -2,6 +2,13 @@ import numpy as np
 import cv2
 from skimage import color, util, filters, feature, img_as_float32, io
 from matplotlib import pyplot as plt
+from utility.image_operations import \
+    load_image, \
+    save_image, \
+    show_image, \
+    visualize_image, \
+    visualize_staff_lines, \
+    visualize_notes
 
 im_size = (850, 1100)
 threshold = im_size[0] * 0.5
@@ -13,9 +20,9 @@ threshold = im_size[0] * 0.5
 
 def circle_height(image):
     # modify image
-    inverted_image = util.invert(image)
-    horiz_sum = np.sum(inverted_image, axis=1)
-    horiz_sum[horiz_sum < 600] = 0
+    horiz_sum = np.sum(image, axis=1)
+    threshold = image.shape[1] * 0.5
+    horiz_sum[horiz_sum < threshold] = 0
 
     # maxes for staff lines
     staff_lines = feature.peak_local_max(horiz_sum).flatten()
@@ -31,7 +38,7 @@ def circle_height(image):
 # creates hough circles and returns notehead coordinates
 def hough_circle(height):
     # read image
-    img = cv2.imread('processed.png', cv2.IMREAD_COLOR)
+    img = cv2.imread('../results/processed.png', cv2.IMREAD_COLOR)
 
     # convert to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -45,7 +52,7 @@ def hough_circle(height):
     # I HAVE NO TESTED THIS WITH HEIGHT
     detected_circles = cv2.HoughCircles(edge_detected_image,
                                         cv2.HOUGH_GRADIENT, 2, 41, param1=100,
-                                        param2=8, minRadius=0, maxRadius=height/2)
+                                        param2=8, minRadius=0, maxRadius=height//2)
 
     return detected_circles
 

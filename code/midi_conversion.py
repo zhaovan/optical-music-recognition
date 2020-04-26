@@ -9,7 +9,10 @@ def create_midi(path, notes):
 
     current_time = 0
     for (type, length, pitch) in notes:
-        note_number = pitch.astype(int)*2 + 64
+        length = float(length)
+        pitch = float(pitch)
+        note_number = int(pitch)*2 + 64
+        note_number = min(max(0, note_number), 127)
         
         if (type == b'note'):
             note = pretty_midi.Note(velocity=100, pitch=note_number, start=current_time, end=current_time + length)

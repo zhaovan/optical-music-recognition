@@ -19,7 +19,7 @@ def circle_height(image):
 
 def hough_circle(height):
     # Read image. 
-    img = cv2.imread('nice.png', cv2.IMREAD_COLOR) 
+    img = cv2.imread('processed.png', cv2.IMREAD_COLOR) 
   
     # Convert to grayscale. 
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) 
@@ -31,9 +31,10 @@ def hough_circle(height):
     cv2.imshow('Edge', edge_detected_image)
     cv2.waitKey(0)
     
+    # 8 2 8
     detected_circles = cv2.HoughCircles(edge_detected_image,  
                         cv2.HOUGH_GRADIENT, 2, 41, param1 = 100, 
-                    param2 = 8, minRadius = 2, maxRadius = 8) 
+                    param2 = 8, minRadius = 0, maxRadius = 6) 
 
     print(detected_circles)
 

@@ -15,7 +15,7 @@ from utility.image_operations import \
     visualize_image, \
     visualize_staff_lines, \
     visualize_notes
-from note_detection.hough_v2 import note_array
+from hough_v2 import note_array
 from preprocessing.staff_removal import staff_removal
 import warnings
 import argparse
@@ -48,7 +48,7 @@ def command_line_args():
         description='A program that creates a MIDI file from an image and extracted musical features!')
 
     parser.add_argument("--image-path",
-                        default='../data/fuzzy-wuzzy.png',
+                        default='../data/fuzzed.png',
                         type=str,
                         help="This is the path to your image!")
     parser.add_argument("--features-path",
@@ -80,8 +80,10 @@ def main():
 
     save_image("../results/processed.png", removed_staff_img)
 
+    staff_dist = find_staff_distance(staff_lines)
+
     # Function to get Hough
-    detected_circles = note_array(I)
+    detected_circles = note_array(int(staff_dist))
 
     features = circles_to_features(detected_circles)
 
@@ -90,8 +92,6 @@ def main():
 
     pitches = find_pitches(features, staff_lines, matched_staffs)
     print("Matched features to pitches.")
-
-    staff_dist = find_staff_distance(staff_lines)
 
     if (not(args.no_vis)):
         visualize_image(I, as_gray=True)

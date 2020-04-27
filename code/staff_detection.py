@@ -13,8 +13,8 @@ from utility.image_operations import \
     visualize_notes
 import matplotlib
 
-im_size = (850, 1100)
-threshold = im_size[0] * 0.5
+im_size = (813, 925)
+threshold = im_size[0] * .5
 
 def process_image(path):
     image = load_image(path, as_gray=True)

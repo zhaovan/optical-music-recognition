@@ -5,7 +5,7 @@ import argparse
 from skimage import io, img_as_ubyte, img_as_float32, color, util
 from scipy import misc
 import matplotlib
-matplotlib.use('macosx')
+#matplotlib.use('macosx')
 from matplotlib import pyplot as plt
 import matplotlib.lines as lines
 

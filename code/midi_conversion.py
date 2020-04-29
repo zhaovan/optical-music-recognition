@@ -1,6 +1,8 @@
 import pretty_midi
 import numpy as np
 
+c_major = [0, 1, 3, 5, 7, 8, 10]
+
 def create_midi(path, notes):
     song = pretty_midi.PrettyMIDI()
 
@@ -10,8 +12,9 @@ def create_midi(path, notes):
     current_time = 0
     for (type, length, pitch) in notes:
         length = float(length)
-        pitch = float(pitch)
-        note_number = int(pitch)*2 + 64
+        pitch = int(pitch)
+        num_octaves = pitch // 8
+        note_number = num_octaves * 12 + c_major[pitch % 8] + 64
         note_number = min(max(0, note_number), 127)
         
         if (type == b'note'):

@@ -2,6 +2,8 @@ from skimage.morphology import flood
 import numpy as np
 import random as rng
 
+from preprocessing.staff_removal import staff_removal
+
 import cv2
 
 
@@ -27,6 +29,8 @@ def create_bounding_boxes(image, height=30):
                 bounding_rec = cv2.boundingRect(mask)
                 bound_arr.append(bounding_rec)
 
+    print(bound_arr)
+
     bound_arr = np.array(bound_arr)
     for i in range(len(bound_arr)):
         color = (256, 256, 256)
@@ -40,15 +44,11 @@ def create_bounding_boxes(image, height=30):
 
 
 def main():
-    img = cv2.imread('../results/processed.png', cv2.IMREAD_COLOR)
+    # img = cv2.imread('../results/processed.png', cv2.IMREAD_COLOR)
 
-    # convert to grayscale
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    img = staff_removal('../results/processed.png')
 
-    # blur using 3 * 3 kernel
-    gray_blurred = cv2.blur(gray, (3, 3))
-
-    create_bounding_boxes(gray_blurred)
+    create_bounding_boxes(img)
 
 
 if __name__ == "__main__":

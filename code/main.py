@@ -72,7 +72,7 @@ def main():
     print("Number of staffs: " + str(staff_lines.shape))
 
     # A [# of features x 4] array holding all of the features for the image
-    features = load_features(args.features_path)
+    truth_features = load_features(args.features_path)
 
     # Code Ivan added for feature detection using methods
     # Function to remove staff

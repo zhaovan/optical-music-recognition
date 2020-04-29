@@ -13,7 +13,7 @@ from skimage import data, color, img_as_ubyte, util
 from skimage.feature import canny
 from skimage.transform import hough_ellipse
 from skimage.draw import ellipse_perimeter
-from staff_detection import detect_staff_lines, find_staff_distance, process_image
+# from staff_detection import detect_staff_lines, find_staff_distance, process_image
 from sorin_cheat_staff_removal import staff_removal
 
 import matplotlib

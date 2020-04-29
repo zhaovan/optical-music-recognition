@@ -46,6 +46,9 @@ def staff_removal(image_path):
     img = cv2.imread(image_path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
+    cv2.imshow('img', img)
+    cv2.waitKey(10000)
+
     img = cv2.bitwise_not(img)
     th2 = cv2.adaptiveThreshold(
         img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 15, -2)
@@ -123,7 +126,7 @@ def staff_removal(image_path):
     return vertical
 
 def main():
-    path = '../../midi_conversion/data/uwuu.png'
+    path = '../../data/bounding.png'
     image = img_as_float32(io.imread(path, as_gray=True))
 
     newimage = staff_removal(path)

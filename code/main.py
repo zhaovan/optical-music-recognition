@@ -20,6 +20,7 @@ from preprocessing.staff_removal import staff_removal
 import warnings
 import argparse
 from pathlib import Path
+import cv2
 
 import sys
 
@@ -34,6 +35,7 @@ import sys
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
+
 def circles_to_features(circles):
     features = []
     circles = circles[0]
@@ -42,6 +44,7 @@ def circles_to_features(circles):
         features.append((x, y, 0.25, b'note'))
 
     return np.array(features)
+
 
 def command_line_args():
     parser = argparse.ArgumentParser(
@@ -76,11 +79,11 @@ def main():
 
     # Code Ivan added for feature detection using methods
     # Function to remove staff
-    removed_staff_img = staff_removal(args.image_path)
+    staff_dist = find_staff_distance(staff_lines)
+
+    removed_staff_img = staff_removal(args.image_path, staff_dist)
 
     save_image("../results/processed.png", removed_staff_img)
-
-    staff_dist = find_staff_distance(staff_lines)
 
     # Function to get Hough
     detected_circles = note_array(int(staff_dist))
@@ -104,6 +107,7 @@ def main():
 
     path = Path(args.image_path).stem
     create_midi(path, notes)
+
 
 if __name__ == "__main__":
     main()

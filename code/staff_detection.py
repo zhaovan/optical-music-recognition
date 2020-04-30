@@ -13,7 +13,7 @@ from utility.image_operations import \
     visualize_notes
 import matplotlib
 
-im_size = (813, 925)
+im_size = (850, 1100)
 threshold = im_size[0] * .5
 
 def process_image(path):
@@ -53,8 +53,9 @@ def find_staff_distance(staffs):
         dist = 0
         for l in range(staff.shape[0] - 1):
             dist += np.absolute(staff[l] - staff[l + 1])
-        avg_dist += dist / staff.shape[0]
-    avg_dist = (avg_dist / staffs.shape[0]) / 2
+            print(np.absolute(staff[l] - staff[l + 1]))
+        avg_dist += dist / float(staff.shape[0] - 1)
+    avg_dist = (avg_dist / float(staffs.shape[0])) / 2
     return avg_dist
 
 def find_pitches(features, staffs, matched_staffs):

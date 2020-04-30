@@ -13,8 +13,8 @@ def create_midi(path, notes):
     for (type, length, pitch) in notes:
         length = float(length)
         pitch = int(pitch)
-        num_octaves = pitch // 8
-        note_number = num_octaves * 12 + c_major[pitch % 8] + 64
+        num_octaves = pitch // 7
+        note_number = num_octaves * 12 + c_major[pitch % 7] + 64
         note_number = min(max(0, note_number), 127)
         
         if (type == b'note'):

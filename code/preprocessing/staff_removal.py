@@ -36,7 +36,7 @@ def staff_removal(image_path):
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
 
-    verticalsize = int(rows / 200)
+    verticalsize = int(rows / 90)
     verticalStructure = cv2.getStructuringElement(
         cv2.MORPH_RECT, (1, verticalsize))
     vertical = cv2.erode(vertical, verticalStructure, (-1, -1))

@@ -14,17 +14,20 @@ from skimage import color, util, filters, feature
 im_size = (850, 1100)
 threshold = im_size[0] * 0.5
 
+
 def load_image(path, as_gray):
     if (as_gray):
         return img_as_float32(io.imread(path, as_gray=True))
     else:
         return img_as_float32(io.imread(path))
 
+
 def process_image(path):
     image = load_image(path, as_gray=True)
     image = util.invert(image)
     np.resize(image, im_size)
     return image
+
 
 def detect_staff_lines(image):
     horiz_sum = np.sum(image, axis=1)
@@ -34,6 +37,7 @@ def detect_staff_lines(image):
     staff_lines = np.sort(staff_lines, axis=0)
     return staff_lines
 
+
 def my_dsl(image):
     horiz_sum = np.sum(image, axis=1)
     horiz_sum[horiz_sum < threshold] = 0
@@ -41,6 +45,7 @@ def my_dsl(image):
     staff_lines = np.reshape(staff_lines, (-1, 5))
     staff_lines = np.sort(staff_lines, axis=0)
     return staff_lines
+
 
 def staff_removal(image_path):
     img = cv2.imread(image_path)
@@ -79,7 +84,7 @@ def staff_removal(image_path):
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
 
-    verticalsize = int(rows / 30)
+    verticalsize = int(rows / 90)
     verticalStructure = cv2.getStructuringElement(
         cv2.MORPH_RECT, (1, verticalsize))
     vertical = cv2.erode(vertical, verticalStructure, (-1, -1))
@@ -122,11 +127,12 @@ def staff_removal(image_path):
 
     cv2.imshow('vertical', vertical)
     cv2.waitKey(10000)
-    
+
     return vertical
 
+
 def main():
-    path = '../../data/bounding.png'
+    path = '../../data/fuzzed.png'
     image = img_as_float32(io.imread(path, as_gray=True))
 
     newimage = staff_removal(path)

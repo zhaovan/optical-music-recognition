@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 
-def staff_removal(image_path):
+def staff_removal(image_path, staff_dist):
     img = cv2.imread(image_path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -36,7 +36,7 @@ def staff_removal(image_path):
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
 
-    verticalsize = int(rows / 90)
+    verticalsize = int(staff_dist)
     verticalStructure = cv2.getStructuringElement(
         cv2.MORPH_RECT, (1, verticalsize))
     vertical = cv2.erode(vertical, verticalStructure, (-1, -1))

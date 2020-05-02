@@ -79,12 +79,23 @@ class NoteClassificationModel(tf.keras.Model):
 
 
 def train(model, datasets):
+    callback_list = [
+        tf.keras.callbacks.ModelCheckpoint(
+            filepath="./checkpoints/" +
+            "weights.e{epoch:02d}-" +
+            "acc{accuracy:.4f}.h5",
+            monitor='accuracy',
+            save_best_only=True,
+            save_weights_only=True)
+    ]
+
     model.fit(
         x=np.array(datasets.images, dtype=np.float32),
         y=datasets.annotations,
         #validation_data=np.array(datasets.test_images, dtype=np.float32),
         epochs=model.epochs,
         batch_size=model.batch_size,
+        callbacks=callback_list
     )
 
 

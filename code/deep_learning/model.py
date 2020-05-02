@@ -3,6 +3,8 @@ import tensorflow as tf
 from tensorflow.keras.layers import \
     Conv2D, MaxPool2D, Dropout, Flatten, Dense
 
+from preprocess import Dataset_Reader
+
 
 class NoteClassificationModel(tf.keras.Model):
 
@@ -58,3 +60,19 @@ class NoteClassificationModel(tf.keras.Model):
             image = layer(image)
 
         return image
+
+    def loss_fn(self, labels, predictions):
+        """ Loss function for the model. """
+
+        return tf.keras.losses.sparse_categorical_crossentropy(
+            labels, predictions, from_logits=False)
+
+
+def main():
+    data_reader = Dataset_Reader(
+        r"C:\Users\Ivan Zhao\Documents\GitHub\cs1430-final-project\code\deep_learning\dataset")
+    data_reader.read_images()
+
+
+if __name__ == "__main__":
+    main()

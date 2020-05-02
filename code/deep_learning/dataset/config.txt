@@ -1,0 +1,1 @@
+Grid Size: (20, 10) Tile Size: (220, 120)

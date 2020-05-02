@@ -1,9 +1,10 @@
 import numpy as np
 import cv2
 
-raw_image = cv2.imread('../../data/bounding.png')
+raw_image = cv2.imread('../../results/nice.png')
+# print(raw_image)
 
-#raw_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+# raw_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 cv2.imshow('Original Image', raw_image)
 cv2.waitKey(0)
 
@@ -15,7 +16,8 @@ edge_detected_image = cv2.Canny(bilateral_filtered_image, 75, 200)
 cv2.imshow('Edge', edge_detected_image)
 cv2.waitKey(0)
 
-_, contours, hierarchy = cv2.findContours(edge_detected_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+contours, hierarchy = cv2.findContours(
+    edge_detected_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
 # contour_list = []
 # for contour in contours:
@@ -28,9 +30,19 @@ _, contours, hierarchy = cv2.findContours(edge_detected_image, cv2.RETR_TREE, cv
 # cv2.imshow('Objects Detected',raw_image)
 # cv2.waitKey(0)
 
+drawing = raw_image.copy()
+
+color = (25, 25, 25)
+
 for cnt in contours:
-    x,y,w,h = cv2.boundingRect(cnt)
-    boxed_img = raw_image[y: y+h, x: x+w]
-    if np.size(boxed_img) > 0:
-        cv2.imshow('Box', boxed_img)
-        cv2.waitKey(0)
+    x, y, w, h = cv2.boundingRect(cnt)
+    # boxed_img = raw_image[y: y+h, x: x+w]
+    # if np.size(boxed_img) > 0:
+    #     cv2.imshow('Box', boxed_img)
+    #     cv2.waitKey(0)
+
+    cv2.rectangle(drawing, (int(x), int(y)),
+                  (int(x + w), int(y + h)), color, 2)
+
+cv2.imshow("Boxes", drawing)
+cv2.waitKey(0)

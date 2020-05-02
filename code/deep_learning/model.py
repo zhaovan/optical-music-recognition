@@ -5,6 +5,10 @@ from tensorflow.keras.layers import \
 
 from preprocess import Dataset_Reader
 
+import argparse
+import pickle
+import numpy as np
+
 
 class NoteClassificationModel(tf.keras.Model):
 
@@ -61,18 +65,25 @@ class NoteClassificationModel(tf.keras.Model):
 
         return image
 
-    def loss_fn(self, labels, predictions):
+    @staticmethod
+    def loss_fn(labels, predictions):
         """ Loss function for the model. """
-
+        # print("labels: ")
+        # print(labels.shape)
+        # print(labels[0])
+        # print("predictions: ")
+        # print(predictions.shape)
+        # print(predictions[0])
         return tf.keras.losses.sparse_categorical_crossentropy(
             labels, predictions, from_logits=False)
 
 
 def train(model, datasets):
     model.fit(
-        x=datasets.train_data,
-        validation_data=datasets.test_data,
-        epochs=model.num_epochs,
+        x=np.array(datasets.images, dtype=np.float32),
+        y=datasets.annotations,
+        #validation_data=np.array(datasets.test_images, dtype=np.float32),
+        epochs=model.epochs,
         batch_size=model.batch_size,
     )
 
@@ -84,14 +95,53 @@ def test(model, test_data):
     )
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="OMR TIME")
+    parser.add_argument(
+        '--old_data',
+        action='store_true',
+        help='''Loads old preprocess''')
+
+    return parser.parse_args()
+
+
 def main():
     # data_reader = Dataset_Reader(
     #     r"C:\Users\Ivan Zhao\Documents\GitHub\cs1430-final-project\code\deep_learning\dataset")
     data_reader = Dataset_Reader("dataset")
-    data_reader.read_images()
-    model = NoteClassificationModel()
-    train(model, data_reader.test_images)
+
+    if not ARGS.old_data:
+        print("Reading new data")
+        data_reader.read_images()
+        print("Saving new data")
+        # with open('dataset.pkl', 'wb') as output:
+        #     pickle.dump(data_reader, output, pickle.HIGHEST_PROTOCOL)
+    else:
+        print("Loading old data")
+        # with open('dataset.pkl', 'rb') as input:
+        #     data_reader = pickle.load(input)
+
+    print("Shape of images")
+    print(data_reader.images.shape)
+    print("Entry of images")
+    print(data_reader.images[0])
+    print("Shape of annotations")
+    print(data_reader.annotations.shape)
+    print("Entry of annotations")
+    print(data_reader.annotations[0])
+
+    model = NoteClassificationModel(data_reader.nr_classes)
+
+    print("Compile model")
+    model.compile(
+        optimizer=model.optimizer,
+        loss=model.loss_fn,
+        metrics=["sparse_categorical_accuracy"])
+
+    print("Start training")
+    train(model, data_reader)
 
 
-if __name__ == "__main__":
-    main()
+ARGS = parse_args()
+main()

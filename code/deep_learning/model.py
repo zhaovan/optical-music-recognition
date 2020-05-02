@@ -68,10 +68,29 @@ class NoteClassificationModel(tf.keras.Model):
             labels, predictions, from_logits=False)
 
 
+def train(model, datasets):
+    model.fit(
+        x=datasets.train_data,
+        validation_data=datasets.test_data,
+        epochs=model.num_epochs,
+        batch_size=model.batch_size,
+    )
+
+
+def test(model, test_data):
+    model.evaluate(
+        x=test_data,
+        verbose=1,
+    )
+
+
 def main():
-    data_reader = Dataset_Reader(
-        r"C:\Users\Ivan Zhao\Documents\GitHub\cs1430-final-project\code\deep_learning\dataset")
+    # data_reader = Dataset_Reader(
+    #     r"C:\Users\Ivan Zhao\Documents\GitHub\cs1430-final-project\code\deep_learning\dataset")
+    data_reader = Dataset_Reader("dataset")
     data_reader.read_images()
+    model = NoteClassificationModel()
+    train(model, data_reader.test_images)
 
 
 if __name__ == "__main__":

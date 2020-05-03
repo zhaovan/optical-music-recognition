@@ -15,7 +15,7 @@ class NoteClassificationModel(tf.keras.Model):
     def __init__(self, number_classes):
         super(NoteClassificationModel, self).__init__()
 
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=1e-2)
 
         self.number_classes = number_classes
 

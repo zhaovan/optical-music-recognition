@@ -95,7 +95,7 @@ def train(model, datasets):
         validation_data=(np.array(datasets.test_images,
                                   dtype=np.float32) / 255., datasets.test_annotations),
         epochs=model.epochs,
-        batch_size=None,  # none for right now
+        batch_size=model.batch_size,  # none for right now
         callbacks=callback_list
     )
 

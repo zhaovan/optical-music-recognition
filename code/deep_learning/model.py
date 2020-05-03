@@ -19,31 +19,31 @@ class NoteClassificationModel(tf.keras.Model):
 
         self.number_classes = number_classes
 
-        self.batch_size = 100
+        self.batch_size = 160
 
         self.epochs = 20  # no clue
         self.epsilon = 0.001
-        self.dropout_rate = 0.2
+        self.dropout_rate = 0.5
 
         # Follows implementation similar to deepscores model: conv, relu, maxpool, dropout
         self.architecture = [
             Conv2D(32, 3, 1, padding="same", activation="relu"),
             MaxPool2D(2, padding="same"),
-            Dropout(self.dropout_rate),
+            # Dropout(self.dropout_rate),
             # Set of layers 2
             Conv2D(64, 3, 1, padding="same", activation="relu"),
             MaxPool2D(2, padding="same"),
-            Dropout(self.dropout_rate),
+            # Dropout(self.dropout_rate),
 
             # Set of layers 3
             Conv2D(128, 3, 1, padding="same", activation="relu"),
             MaxPool2D(2, padding="same"),
-            Dropout(self.dropout_rate),
+            # Dropout(self.dropout_rate),
 
             # set of layers 4
             Conv2D(256, 3, 1, padding="same", activation="relu"),
             MaxPool2D(2, padding="same"),
-            Dropout(self.dropout_rate),
+            # Dropout(self.dropout_rate),
 
             # Set of layers
             Conv2D(64, 3, 1, padding="same", activation="relu"),
@@ -52,7 +52,6 @@ class NoteClassificationModel(tf.keras.Model):
 
             # Flattens
             Flatten(),
-
             # Two dense layers
             Dense(1024, activation="relu"),
             Dense(self.number_classes, activation="softmax")
@@ -68,12 +67,6 @@ class NoteClassificationModel(tf.keras.Model):
     @staticmethod
     def loss_fn(labels, predictions):
         """ Loss function for the model. """
-        # print("labels: ")
-        # print(labels.shape)
-        # print(labels[0])
-        # print("predictions: ")
-        # print(predictions.shape)
-        # print(predictions[0])
         return tf.keras.losses.sparse_categorical_crossentropy(
             labels, predictions, from_logits=False)
 

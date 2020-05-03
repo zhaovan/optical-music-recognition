@@ -81,8 +81,12 @@ class Dataset_Reader():
 
     def load_class(self, folder, class_index):
         # move through images in folder
+        i = 0
         for image in os.listdir(self.path + "/"+folder):
+            if i >= 7:
+                return
             self.load_image(folder, image, class_index)
+            i += 1
 
     def load_image(self, folder, image, class_index):
         image = imageio.imread(self.path + "/" + folder + "/" + image)

@@ -93,9 +93,11 @@ def train(model, datasets):
     )
 
 
-def test(model, test_data):
+def test(model, datasets):
     model.evaluate(
-        x=test_data,
+        x=np.array(datasets.test_images,
+                   dtype=np.float32) / 255.,
+        y=datasets.test_annotations,
         verbose=1,
     )
 
@@ -107,6 +109,21 @@ def parse_args():
         '--old_data',
         action='store_true',
         help='''Loads old preprocess''')
+    parser.add_argument(
+        '--evaluate',
+        action='store_true',
+        help='''Skips training and evaluates on the test set once.
+        You can use this to test an already trained model by loading
+        its checkpoint.''')
+    parser.add_argument(
+        '--load-checkpoint',
+        default=None,
+        help='''Path to model checkpoint file (should end with the
+        extension .h5). Checkpoints are automatically saved when you
+        train your model. If you want to continue training from where
+        you left off, this is how you would load your weights. In
+        the case of task 2, passing a checkpoint path will disable
+        the loading of VGG weights.''')
 
     return parser.parse_args()
 
@@ -141,14 +158,22 @@ def main():
         shape=(data_reader.tile_size[0], data_reader.tile_size[1], 1)))
     model.summary()
 
+    if ARGS.load_checkpoint is not None:
+        print("Loading checkpoint")
+        model.load_weights(ARGS.load_checkpoint)
+
     print("Compile model")
     model.compile(
         optimizer=model.optimizer,
         loss=model.loss_fn,
         metrics=["sparse_categorical_accuracy"])
 
-    print("Start training")
-    train(model, data_reader)
+    if ARGS.evaluate:
+        print("Start testing")
+        test(model, data_reader)
+    else:
+        print("Start training")
+        train(model, data_reader)
 
 
 ARGS = parse_args()

@@ -90,11 +90,12 @@ def train(model, datasets):
     ]
 
     model.fit(
-        x=np.array(datasets.images, dtype=np.float32),
+        x=np.array(datasets.images, dtype=np.float32) / 255.,
         y=datasets.annotations,
-        #validation_data=np.array(datasets.test_images, dtype=np.float32),
+        validation_data=(np.array(datasets.test_images,
+                                  dtype=np.float32) / 255., datasets.test_annotations),
         epochs=model.epochs,
-        batch_size=model.batch_size,
+        batch_size=None,  # none for right now
         callbacks=callback_list
     )
 
@@ -143,6 +144,9 @@ def main():
     print(data_reader.annotations[0])
 
     model = NoteClassificationModel(data_reader.nr_classes)
+    model(tf.keras.Input(
+        shape=(data_reader.tile_size[0], data_reader.tile_size[1], 1)))
+    model.summary()
 
     print("Compile model")
     model.compile(

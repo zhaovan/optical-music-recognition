@@ -83,7 +83,7 @@ class Dataset_Reader():
         # move through images in folder
         i = 0
         for image in os.listdir(self.path + "/"+folder):
-            if i >= 7:
+            if i >= 1:
                 return
             self.load_image(folder, image, class_index)
             i += 1

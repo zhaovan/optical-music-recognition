@@ -21,7 +21,7 @@ class NoteClassificationModel(tf.keras.Model):
 
         self.batch_size = 100
 
-        self.epochs = 50  # no clue
+        self.epochs = 1  # no clue
         self.epsilon = 0.001
         self.dropout_rate = 0.2
 
@@ -83,8 +83,8 @@ def train(model, datasets):
         tf.keras.callbacks.ModelCheckpoint(
             filepath="./checkpoints/" +
             "weights.e{epoch:02d}-" +
-            "acc{accuracy:.4f}.h5",
-            monitor='accuracy',
+            "acc{val_sparse_categorical_accuracy:.4f}.h5",
+            monitor='val_sparse_categorical_accuracy',
             save_best_only=True,
             save_weights_only=True)
     ]

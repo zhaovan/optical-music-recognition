@@ -21,7 +21,7 @@ class NoteClassificationModel(tf.keras.Model):
 
         self.batch_size = 160
 
-        self.epochs = 20  # no clue
+        self.epochs = 10  # no clue
         self.epsilon = 0.001
         self.dropout_rate = 0.5
 

@@ -121,7 +121,7 @@ def main():
     # data_reader = Dataset_Reader(
     #     r"C:\Users\Ivan Zhao\Documents\GitHub\cs1430-final-project\code\deep_learning\dataset")
     data_reader = Dataset_Reader("dataset")
-
+    data_reader.one_hot = False
     if not ARGS.old_data:
         print("Reading new data")
         data_reader.read_images()

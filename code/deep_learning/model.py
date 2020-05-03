@@ -19,7 +19,7 @@ class NoteClassificationModel(tf.keras.Model):
 
         self.number_classes = number_classes
 
-        self.batch_size = 100
+        self.batch_size = 160
 
         self.epochs = 15  # no clue
         self.epsilon = 0.001
@@ -95,7 +95,7 @@ def train(model, datasets):
         validation_data=(np.array(datasets.test_images,
                                   dtype=np.float32) / 255., datasets.test_annotations),
         epochs=model.epochs,
-        batch_size=model.batch_size,  # none for right now
+        batch_size=None,  # none for right now
         callbacks=callback_list
     )
 

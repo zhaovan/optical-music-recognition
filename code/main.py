@@ -22,16 +22,10 @@ import argparse
 from pathlib import Path
 import cv2
 
+from deep_learning.model import NoteClassificationModel
+
+
 import sys
-
-# sys.path.insert(
-#     1, r"C:\Users\Ivan Zhao\Documents\GitHub\cs1430-final-project\code\note_detection")
-# sys.path.insert(
-#     2, r"C:\Users\Ivan Zhao\Documents\GitHub\cs1430-final-project\code\midi_conversion")
-# sys.path.insert(
-#     3, r"C:\Users\Ivan Zhao\Documents\GitHub\cs1430-final-project\code\preprocessing")
-
-
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
@@ -86,9 +80,9 @@ def main():
     save_image("../results/processed.png", removed_staff_img)
 
     # Function to get Hough
-    detected_circles = note_array(int(staff_dist))
+    # detected_circles = note_array(int(staff_dist))
 
-    features = circles_to_features(detected_circles)
+    # features = circles_to_features(detected_circles)
 
     matched_staffs = find_feature_staffs(features, staff_lines)
     print("Matched features to staffs.")

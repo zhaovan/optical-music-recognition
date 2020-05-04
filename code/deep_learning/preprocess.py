@@ -14,9 +14,9 @@ class Dataset_Reader():
         self.class_names = pa.read_csv(
             self.path+"/class_names.csv", header=None)
 
-        self.min_number = min_number
         self.split = split
         self.one_hot = one_hot
+        self.nr_classes = 0
 
         config = open(self.path+"/config.txt", "r")
         config_str = config.read()

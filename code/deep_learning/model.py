@@ -121,16 +121,12 @@ def parse_args():
         help='''Path to model checkpoint file (should end with the
         extension .h5). Checkpoints are automatically saved when you
         train your model. If you want to continue training from where
-        you left off, this is how you would load your weights. In
-        the case of task 2, passing a checkpoint path will disable
-        the loading of VGG weights.''')
+        you left off, this is how you would load your weights.''')
 
     return parser.parse_args()
 
 
 def main():
-    # data_reader = Dataset_Reader(
-    #     r"C:\Users\Ivan Zhao\Documents\GitHub\cs1430-final-project\code\deep_learning\dataset")
     data_reader = Dataset_Reader("dataset")
     data_reader.one_hot = False
     if not ARGS.old_data:

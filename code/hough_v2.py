@@ -2,13 +2,6 @@ import numpy as np
 import cv2
 from skimage import color, util, filters, feature, img_as_float32, io
 from matplotlib import pyplot as plt
-# from utility.image_operations import \
-#     load_image, \
-#     save_image, \
-#     show_image, \
-#     visualize_image, \
-#     visualize_staff_lines, \
-#     visualize_notes
 from staff_detection import \
     process_image, \
     detect_staff_lines, \
@@ -55,12 +48,11 @@ def hough_circle(height):
     # blur using 3 * 3 kernel
     gray_blurred = cv2.blur(gray, (3, 3))
 
-    #edges
+    # edges
     edge_detected_image = cv2.Canny(gray, 75, 200)
 
     cv2.imshow("Detected Circle", edge_detected_image)
     cv2.waitKey(0)
-
 
     # I HAVE NO TESTED THIS WITH HEIGHT
     detected_circles = cv2.HoughCircles(edge_detected_image,
@@ -89,10 +81,9 @@ def hough_circle(height):
 # combines both functions
 # THIS IS NOT USING THE GET IMAGE STUFF YET NEEDS TO BE MODIFIED AYEEEEEEEEEEEEEEEEEEEEEEEEEEEE
 
+
 def note_array(height):
     image = img_as_float32(io.imread('../data/fuzzy-wuzzy.png', as_gray=True))
     inv_image = util.invert(image)
-    #myheight = circle_height(inv_image)
     print(height)
     return hough_circle(height)
-

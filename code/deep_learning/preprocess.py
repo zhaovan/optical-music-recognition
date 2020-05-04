@@ -95,7 +95,6 @@ class Dataset_Reader():
 
         for x_i in range(0, nr_x):
             for y_i in range(0, nr_y):
-                # print(x_i, y_i)
                 self.images.append(image[y_i*self.tile_size[0]:(
                     y_i+1)*self.tile_size[0], x_i*self.tile_size[1]:(x_i+1)*self.tile_size[1]])
                 self.annotations.append(class_index)

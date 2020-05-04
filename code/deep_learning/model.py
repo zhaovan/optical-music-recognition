@@ -3,7 +3,7 @@ import tensorflow as tf
 from tensorflow.keras.layers import \
     Conv2D, MaxPool2D, Dropout, Flatten, Dense
 
-from preprocess import Dataset_Reader
+# from preprocess import Dataset_Reader
 
 import argparse
 import pickle
@@ -58,7 +58,7 @@ class NoteClassificationModel(tf.keras.Model):
         ]
 
     def call(self, image):
-
+        print(image.shape)
         for layer in self.architecture:
             image = layer(image)
 
@@ -127,7 +127,7 @@ def parse_args():
 
 
 def main():
-    data_reader = Dataset_Reader("dataset")
+    data_reader = Dataset_Reader("./dataset")
     data_reader.one_hot = False
     if not ARGS.old_data:
         print("Reading new data")
@@ -172,5 +172,5 @@ def main():
         train(model, data_reader)
 
 
-ARGS = parse_args()
-main()
+# ARGS = parse_args()
+# main()

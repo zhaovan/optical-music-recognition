@@ -7,6 +7,10 @@ import cv2
 import tensorflow as tf
 import sys
 import skimage
+import matplotlib
+from matplotlib import patches
+from matplotlib import pyplot as plt
+
 
 # Imports from other files as needed
 from midi_conversion import create_midi
@@ -109,7 +113,19 @@ def main():
 
     # Bounding Boxes
     print("Finding Bounding Boxes")
-    bounding_boxes = make_bounding_boxes(removed_staff_img).astype(int)
+    bounding_boxes = make_bounding_boxes(removed_staff_img)
+
+    drawing = removed_staff_img.copy()
+
+    fig, ax = plt.subplots(1)
+    ax.imshow(I, cmap='gray_r')
+    for i in range(bounding_boxes.shape[0]):
+        rect = patches.Rectangle((bounding_boxes[i, 0], bounding_boxes[i, 1]), bounding_boxes[i, 2],
+                                 bounding_boxes[i, 3], linewidth=1, edgecolor='r', facecolor='none')
+        ax.add_patch(rect)
+    plt.show()
+
+    print("Bounding Boxes have been Found")
 
     # DL Model Classification
     model = NoteClassificationModel(26)
@@ -123,6 +139,7 @@ def main():
         "./deep_learning/dataset/class_names.csv", header=None)
 
     print("DL Classification")
+
     for i in range(len(bounding_boxes)):
 
         x, y, w, h = bounding_boxes[i]

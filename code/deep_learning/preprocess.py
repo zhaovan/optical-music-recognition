@@ -87,8 +87,8 @@ class Dataset_Reader():
         # move through images in folder
         i = 0
         for image in os.listdir(self.path + "/"+folder):
-            if i > 4:
-                return
+            # if i > 4:
+            #     return
             self.load_image(folder, image, class_index)
             i += 1
 
@@ -101,7 +101,9 @@ class Dataset_Reader():
             for y_i in range(0, nr_y):
                 clean_image = image[y_i*self.tile_size[0]:(
                     y_i+1)*self.tile_size[0], x_i*self.tile_size[1]:(x_i+1)*self.tile_size[1]]
-                # cv2.imshow(str(class_index), clean_image)
+
+                # cv2.imshow(str(class_index), np.array(
+                #     clean_image, dtype=np.float32) / 255.)
                 # cv2.waitKey(0)
                 # cv2.destroyAllWindows()
 

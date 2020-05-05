@@ -104,8 +104,12 @@ class Dataset_Reader():
                 # cv2.imshow(str(class_index), clean_image)
                 # cv2.waitKey(0)
                 # cv2.destroyAllWindows()
+
                 noisy_image = skimage.util.random_noise(
                     clean_image, mode='gaussian')
                 blurry_boi = gaussian(noisy_image)
-                self.images.append(blurry_boi)
+                random_shift_y = np.random.randint(-70, 70)
+                random_shift_x = np.random.randint(-35, 35)
+                shifty_man = skimage.transform.euclidean(blurry_boi, (random_shift_x, random_shift_y))
+                self.images.append(shifty_man)
                 self.annotations.append(class_index)

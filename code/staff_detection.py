@@ -53,7 +53,6 @@ def find_staff_distance(staffs):
         dist = 0
         for l in range(staff.shape[0] - 1):
             dist += np.absolute(staff[l] - staff[l + 1])
-            print(np.absolute(staff[l] - staff[l + 1]))
         avg_dist += dist / float(staff.shape[0] - 1)
     avg_dist = (avg_dist / float(staffs.shape[0])) / 2
     return avg_dist

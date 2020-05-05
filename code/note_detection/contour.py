@@ -21,7 +21,7 @@ def make_bounding_boxes(image):
 
     drawing = raw_image.copy()
 
-    # color = (25, 25, 25)
+    color = (25, 25, 25)
 
     bounding_boxes = np.zeros((len(contours), 4))
 
@@ -31,25 +31,14 @@ def make_bounding_boxes(image):
         boxed_img = raw_image[y: y+h, x: x+w]
         if np.size(boxed_img) > 0:
             bounding_boxes[i] = [x, y, w, h]
-        #     cv2.imshow('Box', boxed_img)
-        #     cv2.waitKey(0)
 
-        # cv2.rectangle(drawing, (int(x), int(y)),
-        #               (int(x + w), int(y + h)), color, 2)
+    # print(bounding_boxes.shape)
 
-    # cv2.imshow("Boxes", drawing)
-    # cv2.waitKey(0)
+    # print(bounding_boxes)
 
-    return bounding_boxes
+    bounding_boxes = list(bounding_boxes)
 
-def consolidate(bb):
-    index = bb.shape(0)
-    print(index)
-    while (index > 0): 
-        dimensionsA = bb.shape[index]
-        dimensionsB = bb.shape[index - 1]
-        range_x_one = int(bb.shape[0] - .1 * bb.shape[w])
-        range_x_two = int(bb.shape[0] - 1.1 * bb.shape[w])
+    max_bound_boxes, _ = cv2.groupRectangles(bounding_boxes, 1, 0.9)
+    # return bounding_boxes
 
-        if (dimensionsB[0] )
-        bb[index]
+    return np.array(max_bound_boxes).astype(int)

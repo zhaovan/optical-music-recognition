@@ -34,6 +34,11 @@ from preprocessing.staff_removal import staff_removal
 from note_detection.contour import make_bounding_boxes
 from deep_learning.model import NoteClassificationModel
 
+import matplotlib
+matplotlib.use('macosx')
+from matplotlib import patches
+from matplotlib import pyplot as plt
+
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
@@ -127,6 +132,13 @@ def main():
 
     print("Bounding Boxes have been Found")
 
+    fig,ax = plt.subplots(1)
+    ax.imshow(I, cmap='gray_r')
+    for i in range(bounding_boxes.shape[0]):
+        rect = patches.Rectangle((bounding_boxes[i, 0],bounding_boxes[i, 1]),bounding_boxes[i, 2],bounding_boxes[i, 3],linewidth=1,edgecolor='r',facecolor='none')
+        ax.add_patch(rect)
+    # plt.show()
+
     # DL Model Classification
     model = NoteClassificationModel(26)
     model(tf.keras.Input(
@@ -144,17 +156,38 @@ def main():
 
         x, y, w, h = bounding_boxes[i]
 
-        resized_img = skimage.transform.resize(
-            removed_staff_img[y:y+h, x:x+w], (220, 120))
+        resized_shape = (220, 120)
+        resized_ratio = (resized_shape[0] / resized_shape[1])
+        resized_img = removed_staff_img[y:y+h, x:x+w]
+
+        ratio = h / w
+        if (ratio > resized_ratio):
+            new_height = resized_shape[0]
+            new_width = np.round(w * (resized_shape[0] / h))
+            width_padding = np.absolute(new_width - resized_shape[1]).astype(int)
+            resized_img = skimage.transform.resize(resized_img, (new_height, new_width))
+            resized_img = skimage.util.pad(resized_img, ((0, 0), (width_padding // 2, width_padding - width_padding // 2)))
+        else:
+            new_width = resized_shape[1]
+            new_height = np.round(h * (resized_shape[1] / h))
+            height_padding = np.absolute(new_height- resized_shape[0]).astype(int)
+            resized_img = skimage.transform.resize(resized_img, (new_height, new_width))
+            resized_img = skimage.util.pad(resized_img, ((height_padding // 2, height_padding - height_padding // 2), (0, 0)))
+
+        # resized_img = skimage.transform.resize(
+        #     removed_staff_img[y:y+h, x:x+w], resized_shape)
+        
         boxed_image = tf.Variable(resized_img, dtype=tf.float32)
 
-        reshaped_img = tf.reshape(boxed_image, [-1, 220, 120, 1])
-        print(reshaped_img.shape)
+        reshaped_img = tf.reshape(boxed_image, [-1, resized_shape[0], resized_shape[1], 1])
+
         layer = model.call(reshaped_img)
         classified_list[i] = np.argmax(layer)
 
     features = create_features(classified_list, class_names, bounding_boxes)
     # Feature Matching
+
+    # print(features)
 
     matched_staffs = find_feature_staffs(features, staff_lines)
     print("Matched features to staffs.")

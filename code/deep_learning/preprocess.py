@@ -111,8 +111,10 @@ class Dataset_Reader():
 
                 random_shift_y = np.random.randint(-70, 70)
                 random_shift_x = np.random.randint(-35, 35)
-                transform_matrix = [[0,0,random_shift_x],[0,0,random_shift_y],[0,0,1]]
+                transform_matrix = np.array(
+                    [[0, 0, random_shift_x], [0, 0, random_shift_y], [0, 0, 1]])
 
-                shifty_man = skimage.transform.matrix_transform(blurry_boi, transform_matrix)
+                shifty_man = skimage.transform.matrix_transform(
+                    blurry_boi, transform_matrix)
                 self.images.append(shifty_man)
                 self.annotations.append(class_index)

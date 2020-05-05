@@ -6,7 +6,7 @@ from tensorflow.keras.layers import \
 from preprocess import Dataset_Reader
 from model import NoteClassificationModel
 
-from vgg_model import NoteClassifcationModel_Vgg4
+from vgg_model import NoteClassificationModel_Vgg4
 
 import argparse
 import pickle
@@ -91,8 +91,8 @@ def main():
     print("Entry of annotations")
     print(data_reader.annotations[0])
 
-    # model = NoteClassificationModel(data_reader.nr_classes)
-    model = NoteClassifcationModel_Vgg4(data_reader.nr_classes)
+    model = NoteClassificationModel(data_reader.nr_classes)
+    # model = NoteClassificationModel_Vgg4(data_reader.nr_classes)
     model(tf.keras.Input(
         shape=(data_reader.tile_size[0], data_reader.tile_size[1], 1)))
     model.summary()

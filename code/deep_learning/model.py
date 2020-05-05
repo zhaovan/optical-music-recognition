@@ -27,7 +27,7 @@ class NoteClassificationModel(tf.keras.Model):
 
         # Follows implementation similar to deepscores model: conv, relu, maxpool, dropout
         self.architecture = [
-            Conv2D(16, 3, 1, padding="same", activation="relu"),
+            Conv2D(256, 3, 1, padding="same", activation="relu"),
             MaxPool2D(3, padding="same"),
 
             # Set of layers 2

@@ -3,7 +3,7 @@ import tensorflow as tf
 from tensorflow.keras.layers import \
     Conv2D, MaxPool2D, Dropout, Flatten, Dense
 
-from preprocess import Dataset_Reader
+# from preprocess import Dataset_Reader
 
 import argparse
 import pickle
@@ -168,5 +168,5 @@ def main():
         train(model, data_reader)
 
 
-ARGS = parse_args()
-main()
+# ARGS = parse_args()
+# main()

@@ -58,7 +58,6 @@ class NoteClassificationModel(tf.keras.Model):
         ]
 
     def call(self, image):
-        print(image.shape)
         for layer in self.architecture:
             image = layer(image)
 

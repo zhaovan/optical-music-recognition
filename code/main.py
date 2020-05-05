@@ -10,7 +10,7 @@ import skimage
 import matplotlib
 from matplotlib import patches
 from matplotlib import pyplot as plt
-
+from skimage import io, img_as_ubyte, img_as_float32, color, util
 
 # Imports from other files as needed
 from midi_conversion import create_midi
@@ -35,9 +35,6 @@ from note_detection.contour import make_bounding_boxes
 from deep_learning.model import NoteClassificationModel
 
 import matplotlib
-matplotlib.use('macosx')
-from matplotlib import patches
-from matplotlib import pyplot as plt
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -60,9 +57,13 @@ def create_features(classified_elements, class_names, bounding_boxes):
         x, y, w, h = bounding_boxes[i]
         avg_x = (x + w) // 2
         avg_y = (y+h) // 2
-        class_index = classified_elements[i]
-        class_name = str((class_names[1])[class_index])
+        class_index_1 = classified_elements[i, 0]
+        class_index_2 = classified_elements[i, 1]
+        print(class_index_1)
+        class_name = str((class_names[1])[class_index_1])
+        class_name2 = str((class_names[1])[class_index_2])
         print(class_name)
+        # print("Second classes", class_name2)
         feature_list.append((avg_x, avg_y, 0.25, class_name))
 
     return np.array(feature_list)
@@ -99,9 +100,9 @@ def main():
     args = command_line_args()
 
     # The current image to process
-    I = process_image(args.image_path)
+    sheet_img = process_image(args.image_path)
 
-    staff_lines = detect_staff_lines(I)
+    staff_lines = detect_staff_lines(sheet_img)
     print("Number of staffs: " + str(staff_lines.shape))
 
     # A [# of features x 4] array holding all of the features for the image
@@ -120,22 +121,13 @@ def main():
     print("Finding Bounding Boxes")
     bounding_boxes = make_bounding_boxes(removed_staff_img)
 
-    drawing = removed_staff_img.copy()
+    print("Bounding Boxes have been Found")
 
     fig, ax = plt.subplots(1)
-    ax.imshow(I, cmap='gray_r')
+    ax.imshow(sheet_img, cmap='gray_r')
     for i in range(bounding_boxes.shape[0]):
         rect = patches.Rectangle((bounding_boxes[i, 0], bounding_boxes[i, 1]), bounding_boxes[i, 2],
                                  bounding_boxes[i, 3], linewidth=1, edgecolor='r', facecolor='none')
-        ax.add_patch(rect)
-    plt.show()
-
-    print("Bounding Boxes have been Found")
-
-    fig,ax = plt.subplots(1)
-    ax.imshow(I, cmap='gray_r')
-    for i in range(bounding_boxes.shape[0]):
-        rect = patches.Rectangle((bounding_boxes[i, 0],bounding_boxes[i, 1]),bounding_boxes[i, 2],bounding_boxes[i, 3],linewidth=1,edgecolor='r',facecolor='none')
         ax.add_patch(rect)
     # plt.show()
 
@@ -145,7 +137,9 @@ def main():
         shape=(220, 120, 1)))
     model.load_weights(args.load_checkpoint)
 
-    classified_list = np.zeros(len(bounding_boxes))
+    print("before this was the testi mg fuck this im done")
+
+    classified_list = np.zeros((len(bounding_boxes), 2))
 
     class_names = pa.read_csv(
         "./deep_learning/dataset/class_names.csv", header=None)
@@ -156,38 +150,61 @@ def main():
 
         x, y, w, h = bounding_boxes[i]
 
+        center_x = int(x + 0.5 * w)
+        center_y = int(y + 0.5 * h)
+
+        new_img = 1 - sheet_img
+
         resized_shape = (220, 120)
-        resized_ratio = (resized_shape[0] / resized_shape[1])
-        resized_img = removed_staff_img[y:y+h, x:x+w]
+        # resized_ratio = (resized_shape[0] / resized_shape[1])
+        block_img = new_img[(center_y - 110):(center_y +
+                                              110), (center_x - 60):(center_x + 60)]
+        if not (block_img.shape == resized_shape):
+            continue
 
-        ratio = h / w
-        if (ratio > resized_ratio):
-            new_height = resized_shape[0]
-            new_width = np.round(w * (resized_shape[0] / h))
-            width_padding = np.absolute(new_width - resized_shape[1]).astype(int)
-            resized_img = skimage.transform.resize(resized_img, (new_height, new_width))
-            resized_img = skimage.util.pad(resized_img, ((0, 0), (width_padding // 2, width_padding - width_padding // 2)))
-        else:
-            new_width = resized_shape[1]
-            new_height = np.round(h * (resized_shape[1] / h))
-            height_padding = np.absolute(new_height- resized_shape[0]).astype(int)
-            resized_img = skimage.transform.resize(resized_img, (new_height, new_width))
-            resized_img = skimage.util.pad(resized_img, ((height_padding // 2, height_padding - height_padding // 2), (0, 0)))
+        # ratio = h / w
+        # if (ratio > resized_ratio):
+        #     new_height = resized_shape[0]
+        #     new_width = np.round(w * (resized_shape[0] / h))
+        #     width_padding = np.absolute(
+        #         new_width - resized_shape[1]).astype(int)
+        #     resized_img = skimage.transform.resize(
+        #         resized_img, (new_height, new_width))
+        #     resized_img = skimage.util.pad(
+        #         resized_img, ((0, 0), (width_padding // 2, width_padding - width_padding // 2)))
+        # else:
+        #     new_width = resized_shape[1]
+        #     new_height = np.round(h * (resized_shape[1] / h))
+        #     height_padding = np.absolute(
+        #         new_height - resized_shape[0]).astype(int)
+        #     resized_img = skimage.transform.resize(
+        #         resized_img, (new_height, new_width))
+        #     resized_img = skimage.util.pad(resized_img, ((
+        #         height_padding // 2, height_padding - height_padding // 2), (0, 0)))
 
-        # resized_img = skimage.transform.resize(
-        #     removed_staff_img[y:y+h, x:x+w], resized_shape)
-        
+        resized_img = skimage.transform.resize(
+            block_img, resized_shape)
+
+        # plt.imshow(resized_img, cmap="gray")
+        # plt.show()
+
         boxed_image = tf.Variable(resized_img, dtype=tf.float32)
 
-        reshaped_img = tf.reshape(boxed_image, [-1, resized_shape[0], resized_shape[1], 1])
+        reshaped_img = tf.reshape(
+            boxed_image, [-1, resized_shape[0], resized_shape[1], 1])
+
+        print(reshaped_img.shape)
 
         layer = model.call(reshaped_img)
-        classified_list[i] = np.argmax(layer)
+        index_2 = np.argmax(np.delete(layer, np.argmax(layer)))
+        classified_list[i] = (np.argmax(layer), index_2)
+        # print(np.argmax(layer))
+        # print(np.argmax(np.delete(layer, classified_list[i])))
 
     features = create_features(classified_list, class_names, bounding_boxes)
     # Feature Matching
 
-    # print(features)
+    print(features)
 
     matched_staffs = find_feature_staffs(features, staff_lines)
     print("Matched features to staffs.")
@@ -196,9 +213,9 @@ def main():
     print("Matched features to pitches.")
 
     if (not(args.no_vis)):
-        visualize_image(I, as_gray=True)
-        visualize_staff_lines(I, staff_lines)
-        visualize_notes(I, features, staff_lines,
+        visualize_image(sheet_img, as_gray=True)
+        visualize_staff_lines(sheet_img, staff_lines)
+        visualize_notes(sheet_img, features, staff_lines,
                         matched_staffs, pitches, staff_dist)
         show_image()
 

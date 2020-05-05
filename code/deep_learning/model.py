@@ -3,7 +3,7 @@ import tensorflow as tf
 from tensorflow.keras.layers import \
     Conv2D, MaxPool2D, Dropout, Flatten, Dense
 
-# from preprocess import Dataset_Reader
+from preprocess import Dataset_Reader
 
 import argparse
 import pickle
@@ -27,33 +27,30 @@ class NoteClassificationModel(tf.keras.Model):
 
         # Follows implementation similar to deepscores model: conv, relu, maxpool, dropout
         self.architecture = [
-            Conv2D(32, 3, 1, padding="same", activation="relu"),
-            MaxPool2D(2, padding="same"),
-            # Dropout(self.dropout_rate),
-            # Set of layers 2
-            Conv2D(64, 3, 1, padding="same", activation="relu"),
-            MaxPool2D(2, padding="same"),
-            # Dropout(self.dropout_rate),
-
-            # Set of layers 3
-            Conv2D(128, 3, 1, padding="same", activation="relu"),
-            MaxPool2D(2, padding="same"),
-            # Dropout(self.dropout_rate),
-
-            # set of layers 4
             Conv2D(256, 3, 1, padding="same", activation="relu"),
             MaxPool2D(2, padding="same"),
-            # Dropout(self.dropout_rate),
+            # Set of layers 2
+            # Conv2D(64, 3, 1, padding="same", activation="relu"),
+            # MaxPool2D(2, padding="same"),
 
-            # Set of layers
-            Conv2D(64, 3, 1, padding="same", activation="relu"),
-            MaxPool2D(2, padding="same"),
+            # # Set of layers 3
+            # Conv2D(128, 3, 1, padding="same", activation="relu"),
+            # MaxPool2D(2, padding="same"),
+
+            # # set of layers 4
+            # Conv2D(256, 3, 1, padding="same", activation="relu"),
+            # MaxPool2D(2, padding="same"),
+
+            # # Set of layers
+            # Conv2D(64, 3, 1, padding="same", activation="relu"),
+            # MaxPool2D(2, padding="same"),
             Dropout(self.dropout_rate),
 
             # Flattens
             Flatten(),
             # Two dense layers
-            Dense(1024, activation="relu"),
+            Dense(512, activation="relu"),
+            Dropout(self.dropout_rate),
             Dense(self.number_classes, activation="softmax")
         ]
 
@@ -171,5 +168,5 @@ def main():
         train(model, data_reader)
 
 
-# ARGS = parse_args()
-# main()
+ARGS = parse_args()
+main()

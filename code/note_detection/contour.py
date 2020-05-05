@@ -41,3 +41,15 @@ def make_bounding_boxes(image):
     # cv2.waitKey(0)
 
     return bounding_boxes
+
+def consolidate(bb):
+    index = bb.shape(0)
+    print(index)
+    while (index > 0): 
+        dimensionsA = bb.shape[index]
+        dimensionsB = bb.shape[index - 1]
+        range_x_one = int(bb.shape[0] - .1 * bb.shape[w])
+        range_x_two = int(bb.shape[0] - 1.1 * bb.shape[w])
+
+        if (dimensionsB[0] )
+        bb[index]

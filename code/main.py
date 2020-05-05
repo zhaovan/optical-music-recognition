@@ -52,6 +52,7 @@ def circles_to_features(circles):
 
 def create_features(classified_elements, class_names, bounding_boxes):
     feature_list = []
+    print(classified_elements)
 
     for i in range(len(classified_elements)):
         x, y, w, h = bounding_boxes[i]
@@ -138,9 +139,7 @@ def main():
         shape=(220, 120, 1)))
     model.load_weights(args.load_checkpoint)
 
-    print("before this was the testi mg fuck this im done")
-
-    classified_list = np.zeros((len(bounding_boxes), 2))
+    classified_list = np.zeros(len(bounding_boxes))
 
     class_names = pa.read_csv(
         "./deep_learning/dataset/class_names.csv", header=None)
@@ -187,9 +186,6 @@ def main():
 
         resized_img = skimage.transform.resize(
             block_img, resized_shape)
-
-        # plt.imshow(resized_img, cmap="gray")
-        # plt.show()
 
         boxed_image = tf.Variable(resized_img, dtype=tf.float32)
 

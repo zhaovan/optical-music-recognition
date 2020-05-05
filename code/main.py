@@ -59,10 +59,10 @@ def create_features(classified_elements, class_names, bounding_boxes):
         avg_y = (y+h) // 2
         class_index_1 = classified_elements[i, 0]
         class_index_2 = classified_elements[i, 1]
-        print(class_index_1)
+        # print(class_index_1)
         class_name = str((class_names[1])[class_index_1])
         class_name2 = str((class_names[1])[class_index_2])
-        print(class_name)
+        # print(class_name)
         # print("Second classes", class_name2)
         feature_list.append((avg_x, avg_y, 0.25, class_name))
 
@@ -132,7 +132,8 @@ def main():
     # plt.show()
 
     # DL Model Classification
-    model = NoteClassificationModel(26)
+    #model = NoteClassificationModel(26)
+    model = NoteClassificationModel(7)
     model(tf.keras.Input(
         shape=(220, 120, 1)))
     model.load_weights(args.load_checkpoint)
@@ -144,10 +145,12 @@ def main():
     class_names = pa.read_csv(
         "./deep_learning/dataset/class_names.csv", header=None)
 
+    print(class_names[1])
     print("DL Classification")
 
+    print(len(bounding_boxes))
     for i in range(len(bounding_boxes)):
-
+        print(i)
         x, y, w, h = bounding_boxes[i]
 
         center_x = int(x + 0.5 * w)
@@ -193,18 +196,26 @@ def main():
         reshaped_img = tf.reshape(
             boxed_image, [-1, resized_shape[0], resized_shape[1], 1])
 
-        print(reshaped_img.shape)
-
+        # print(reshaped_img.shape)
+        print(i)
         layer = model.call(reshaped_img)
-        index_2 = np.argmax(np.delete(layer, np.argmax(layer)))
-        classified_list[i] = (np.argmax(layer), index_2)
+        #index_2 = np.argmax(np.delete(layer, np.argmax(layer)))
+        classified_list[i] = (np.argmax(layer), 1)
         # print(np.argmax(layer))
         # print(np.argmax(np.delete(layer, classified_list[i])))
+
+        # SEE THE IMAGE AND ALSO WHAT THE NETWORK THOUGHT
+
+        label = str((class_names[1])[np.argmax(layer)])
+        # print(label)
+        # cv2.imshow(label, resized_img)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
 
     features = create_features(classified_list, class_names, bounding_boxes)
     # Feature Matching
 
-    print(features)
+    print(features.shape)
 
     matched_staffs = find_feature_staffs(features, staff_lines)
     print("Matched features to staffs.")

@@ -110,6 +110,7 @@ class Dataset_Reader():
                 blurry_boi = gaussian(noisy_image)
                 random_shift_y = np.random.randint(-70, 70)
                 random_shift_x = np.random.randint(-35, 35)
-                shifty_man = skimage.transform.EuclideanTransform(blurry_boi, (random_shift_x, random_shift_y))
+                shifty_man = skimage.transform.EuclideanTransform(
+                    blurry_boi, translation=(random_shift_x, random_shift_y))
                 self.images.append(shifty_man)
                 self.annotations.append(class_index)

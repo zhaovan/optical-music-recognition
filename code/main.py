@@ -183,16 +183,10 @@ def main():
         #     resized_img = skimage.util.pad(resized_img, ((
         #         height_padding // 2, height_padding - height_padding // 2), (0, 0)))
 
-        resized_img = skimage.transform.resize(
-            block_img, resized_shape)
+        # resized_img = skimage.transform.resize(
+        #     block_img, resized_shape)
 
-        resized_img[resized_img < 0.5] = 0
-        resized_img[resized_img > 0.5] = 1
-
-        noisy_image = skimage.util.random_noise(resized_img, mode='gaussian')
-        blurry_boi = skimage.filters.gaussian(noisy_image)
-
-        boxed_image = tf.Variable(blurry_boi, dtype=tf.float32)
+        boxed_image = tf.Variable(block_img, dtype=tf.float32)
 
         reshaped_img = tf.reshape(
             boxed_image, [-1, resized_shape[0], resized_shape[1], 1])

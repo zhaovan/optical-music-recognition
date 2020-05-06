@@ -70,6 +70,7 @@ class Dataset_Reader():
         np.random.shuffle(perm)
         self.images = self.images[perm]
         self.annotations = self.annotations[perm]
+        print(self.images)
         print(self.annotations)
 
         # Reshape to fit Tensorflow
@@ -93,7 +94,8 @@ class Dataset_Reader():
             i += 1
 
     def load_image(self, folder, image, class_index):
-        image = imageio.imread(self.path + "/" + folder + "/" + image)
+        image = skimage.img_as_float32(imageio.imread(
+            self.path + "/" + folder + "/" + image))
         nr_y = image.shape[0] // self.tile_size[0]
         nr_x = image.shape[1] // self.tile_size[1]
 
@@ -102,8 +104,10 @@ class Dataset_Reader():
                 clean_image = image[y_i*self.tile_size[0]:(
                     y_i+1)*self.tile_size[0], x_i*self.tile_size[1]:(x_i+1)*self.tile_size[1]]
 
+                # print(clean_image)
+
                 # cv2.imshow(str(class_index), np.array(
-                #     clean_image, dtype=np.float32) / 255.)
+                #     clean_image, dtype=np.float32))
                 # cv2.waitKey(0)
                 # cv2.destroyAllWindows()
 

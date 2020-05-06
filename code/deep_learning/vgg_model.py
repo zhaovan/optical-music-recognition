@@ -13,7 +13,7 @@ import numpy as np
 class NoteClassificationModel_Vgg4(tf.keras.Model):
 
     def __init__(self, number_classes):
-        super(NoteClassificationModel, self).__init__()
+        super(NoteClassificationModel_Vgg4, self).__init__()
 
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
 
@@ -27,32 +27,32 @@ class NoteClassificationModel_Vgg4(tf.keras.Model):
 
         # Follows implementation similar to deepscores model: conv, relu, maxpool, dropout
         self.architecture = [
-        Conv2D(32, 3, 1),
-        Conv2D(32, 3, 1),
-        MaxPooling2D(),
+        Conv2D(32, 3, 1, padding="same"),
+        Conv2D(32, 3, 1, padding="same"),
+        MaxPool2D(3),
 
-        Conv2D(64, 3, 1),
-        Conv2D(64, 3, 1),
-        MaxPooling2D(),
+        Conv2D(64, 3, 1, padding="same"),
+        Conv2D(64, 3, 1, padding="same"),
+        MaxPool2D(3),
 
-        Conv2D(128, 3, 1),
-        Conv2D(128, 3, 1),
-        Conv2D(128, 3, 1),
-        MaxPooling2D(),
+        Conv2D(128, 3, 1, padding="same"),
+        Conv2D(128, 3, 1, padding="same"),
+        Conv2D(128, 3, 1, padding="same"),
+        MaxPool2D(3),
 
-        Conv2D(256, 3, 1),
-        Conv2D(256, 3, 1),
-        Conv2D(256, 3, 1),
-        MaxPooling2D(),
+        Conv2D(256, 3, 1, padding="same"),
+        Conv2D(256, 3, 1, padding="same"),
+        Conv2D(256, 3, 1, padding="same"),
+        MaxPool2D(3),
 
-        Conv2D(512, 3, 1),
-        Conv2D(512, 3, 1),
-        Conv2D(512, 3, 1),
-        AveragePooling2D(),
+        Conv2D(512, 3, 1, padding="same"),
+        Conv2D(512, 3, 1, padding="same"),
+        Conv2D(512, 3, 1, padding="same"),
+        # AveragePooling2D(3),
 
-        Flatten()  # Flatten
+        Flatten(),  # Flatten
         #Dropout(0.5))
-        Dense(units=self.number_classes, activation='softmax', name='output_class'))
+        Dense(units=self.number_classes, activation='softmax', name='output_class')
         ]
 
     def call(self, image):

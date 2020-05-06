@@ -27,25 +27,25 @@ class NoteClassificationModel(tf.keras.Model):
 
         # Follows implementation similar to deepscores model: conv, relu, maxpool, dropout
         self.architecture = [
-            Conv2D(64, 11, 1, padding="same", activation="relu"),
+            Conv2D(256, 11, 1, padding="same", activation="relu"),
             MaxPool2D(3, padding="same"),
 
             # Set of layers 2
-            Conv2D(128, 3, 1, padding="same", activation="relu"),
-            MaxPool2D(2, padding="same"),
+            # Conv2D(128, 3, 1, padding="same", activation="relu"),
+            # MaxPool2D(2, padding="same"),
 
-            # Set of layers 3
-            Conv2D(128, 3, 1, padding="same", activation="relu"),
-            MaxPool2D(2, padding="same"),
+            # # Set of layers 3
+            # Conv2D(128, 3, 1, padding="same", activation="relu"),
+            # MaxPool2D(2, padding="same"),
 
-            # set of layers 4
-            Conv2D(256, 3, 1, padding="same", activation="relu"),
-            MaxPool2D(2, padding="same"),
+            # # set of layers 4
+            # Conv2D(256, 3, 1, padding="same", activation="relu"),
+            # MaxPool2D(2, padding="same"),
 
-            # Set of layers
-            Conv2D(64, 3, 1, padding="same", activation="relu"),
-            MaxPool2D(2, padding="same"),
-            Dropout(self.dropout_rate),
+            # # Set of layers
+            # Conv2D(64, 3, 1, padding="same", activation="relu"),
+            # MaxPool2D(2, padding="same"),
+            # Dropout(self.dropout_rate),
 
             # Flattens
             Flatten(),

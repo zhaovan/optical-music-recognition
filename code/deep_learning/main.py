@@ -25,10 +25,10 @@ def train(model, datasets):
     ]
 
     model.fit(
-        x=np.array(datasets.images, dtype=np.float32) / 255.,
+        x=np.array(datasets.images),
         y=datasets.annotations,
-        validation_data=(np.array(datasets.test_images,
-                                  dtype=np.float32) / 255., datasets.test_annotations),
+        validation_data=(np.array(datasets.test_images),
+                         datasets.test_annotations),
         epochs=model.epochs,
         batch_size=model.batch_size,  # none for right now
         callbacks=callback_list
@@ -37,8 +37,7 @@ def train(model, datasets):
 
 def test(model, datasets):
     model.evaluate(
-        x=np.array(datasets.test_images,
-                   dtype=np.float32) / 255.,
+        x=np.array(datasets.test_images),
         y=datasets.test_annotations,
         verbose=1,
     )

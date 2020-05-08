@@ -3,39 +3,9 @@ import cv2
 from skimage import color, util, filters, feature, img_as_float32, io
 from matplotlib import pyplot as plt
 from matplotlib import patches
-from staff_detection import \
-    process_image, \
-    detect_staff_lines, \
-    load_features, \
-    find_feature_staffs, \
-    find_pitches, \
-    find_staff_distance, \
-    construct_notes
 
 im_size = (850, 1100)
 threshold = 500
-
-# based off Sohum's staff detection
-# needed to find radius parameter for Hough circle
-# returns pixel height between staff lines
-# exclusively for tests
-def circle_height(image):
-    # modify image
-    horiz_sum = np.sum(image, axis=1)
-    horiz_sum[horiz_sum < threshold] = 0
-
-    # maxes for staff lines
-    staff_lines = feature.peak_local_max(horiz_sum).flatten()
-    staff_lines = np.reshape(staff_lines, (-1, 5))
-    staff_lines = np.sort(staff_lines, axis=0)
-    print(staff_lines)
-
-    # return just height
-    sorted_indices = np.sort(staff_lines[1, :])
-    print(sorted_indices)
-    height = sorted_indices[1] - sorted_indices[0]
-    return height
-
 
 # creates hough circles and returns notehead coordinates in x, y, r format
 # height: height of each notehead
@@ -108,7 +78,6 @@ def hough_circle_input(img, bb, height, simg):
         detected_circles = cv2.HoughCircles(edge_detected_image,
                                             cv2.HOUGH_GRADIENT, 1, 41, param1=100,
                                             param2=9, minRadius=int(height) - 2, maxRadius=int(height) + 4)
-        print(detected_circles)
 
         # Convert the circle parameters a, b and r to integers.
         if detected_circles is not None:
@@ -127,9 +96,3 @@ def hough_circle_input(img, bb, height, simg):
                 cv2.waitKey(0)
 
     return detected_circles
-
-
-# originally consolidates all functions, now used to modulate between CNN hough
-# and no CNN hough
-def note_array(height):
-    return hough_circle(height)

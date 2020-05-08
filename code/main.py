@@ -13,8 +13,8 @@ from matplotlib import pyplot as plt
 from skimage import io, img_as_ubyte, img_as_float32, color, util
 
 # Imports from other files as needed
-from midi_conversion import create_midi
-from staff_detection import \
+from postprocessing.midi_conversion import create_midi
+from preprocessing.staff_detection import \
     process_image, \
     detect_staff_lines, \
     load_features, \
@@ -22,15 +22,15 @@ from staff_detection import \
     find_pitches, \
     find_staff_distance, \
     construct_notes
-from utility.image_operations import \
+from postprocessing.image_operations import \
     load_image, \
     save_image, \
     show_image, \
     visualize_image, \
     visualize_staff_lines, \
     visualize_notes
-from hough_v2 import note_array, hough_circle_input
 from preprocessing.staff_removal import staff_removal
+from note_detection.hough_circles import hough_circle, hough_circle_input
 from note_detection.contour import make_bounding_boxes
 from deep_learning.model import NoteClassificationModel
 
@@ -114,8 +114,8 @@ def main():
     save_image("../results/processed.png", removed_staff_img)
 
     # Hough Detection
-    # detected_circles = note_array(int(staff_dist))
-    # features = circles_to_features(detected_circles)
+    detected_circles = hough_circle(int(staff_dist))
+    features = circles_to_features(detected_circles)
 
     # Bounding Boxes
     print("Finding Bounding Boxes")

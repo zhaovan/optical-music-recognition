@@ -4,14 +4,6 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 import numpy as np
 from skimage import color, util, filters, feature
-from utility.image_operations import \
-    load_image, \
-    save_image, \
-    show_image, \
-    visualize_image, \
-    visualize_staff_lines, \
-    visualize_notes
-import matplotlib
 
 im_size = (850, 1100)
 threshold = im_size[0] * .5

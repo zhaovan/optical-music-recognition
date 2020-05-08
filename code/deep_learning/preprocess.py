@@ -3,6 +3,9 @@ import os
 import pandas as pa
 import imageio
 import re
+import skimage
+from skimage.filters import gaussian
+import cv2
 
 
 class Dataset_Reader():
@@ -67,6 +70,8 @@ class Dataset_Reader():
         np.random.shuffle(perm)
         self.images = self.images[perm]
         self.annotations = self.annotations[perm]
+        print(self.images)
+        print(self.annotations)
 
         # Reshape to fit Tensorflow
         self.images = np.expand_dims(self.images, -1)
@@ -83,18 +88,65 @@ class Dataset_Reader():
         # move through images in folder
         i = 0
         for image in os.listdir(self.path + "/"+folder):
-            if i >= 1:
-                return
+            # if i > 4:
+            #     return
             self.load_image(folder, image, class_index)
             i += 1
 
+    def add_translation(self, image):
+        max_translation = 0.3
+        translation_percentage = np.random.randint(-1, 1) * (max_translation / 2)
+
+        height, width = image.shape
+        T = np.float32([[1, 0, width * translation_percentage], [0, 1, height * translation_percentage]]) 
+
+        return cv2.warpAffine(image, T, (width, height)) 
+
+    def add_noise(self, image):
+        noise_threshold = 0.5
+
+        if (np.random.randint(0, 1) < noise_threshold):
+            return skimage.util.random_noise(
+                    image, mode='gaussian')
+        else: 
+            return image
+
+    def add_blur(self, image):
+        blur_threshold = 0.5
+
+        if (np.random.randint(0, 1) < blur_threshold):
+            return gaussian(image)
+        else: 
+            return image
+
     def load_image(self, folder, image, class_index):
-        image = imageio.imread(self.path + "/" + folder + "/" + image)
+        image = skimage.img_as_float32(imageio.imread(
+            self.path + "/" + folder + "/" + image))
         nr_y = image.shape[0] // self.tile_size[0]
         nr_x = image.shape[1] // self.tile_size[1]
 
         for x_i in range(0, nr_x):
             for y_i in range(0, nr_y):
-                self.images.append(image[y_i*self.tile_size[0]:(
-                    y_i+1)*self.tile_size[0], x_i*self.tile_size[1]:(x_i+1)*self.tile_size[1]])
+                clean_image = image[y_i*self.tile_size[0]:(
+                    y_i+1)*self.tile_size[0], x_i*self.tile_size[1]:(x_i+1)*self.tile_size[1]]
+
+                # print(clean_image)
+
+                # cv2.imshow(str(class_index), np.array(
+                #     clean_image, dtype=np.float32))
+                # cv2.waitKey(0)
+                # cv2.destroyAllWindows()
+
+                noisy_image = self.add_noise(clean_image)
+                blurry_boi = self.add_blur(noisy_image)
+                translated_image = self.add_translation(blurry_boi)
+
+                # random_shift_y = np.random.randint(-70, 70)
+                # random_shift_x = np.random.randint(-35, 35)
+                # transform_matrix = np.array(
+                #     [[0, 0, random_shift_x], [0, 0, random_shift_y], [0, 0, 1]])
+
+                # shifty_man = skimage.transform.matrix_transform(
+                #     blurry_boi, transform_matrix)
+                self.images.append(blurry_boi)
                 self.annotations.append(class_index)

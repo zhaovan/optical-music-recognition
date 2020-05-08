@@ -29,7 +29,7 @@ from utility.image_operations import \
     visualize_image, \
     visualize_staff_lines, \
     visualize_notes
-from hough_v2 import note_array
+from hough_v2 import note_array, hough_circle_input
 from preprocessing.staff_removal import staff_removal
 from note_detection.contour import make_bounding_boxes
 from deep_learning.model import NoteClassificationModel
@@ -74,7 +74,7 @@ def command_line_args():
         description='A program that creates a MIDI file from an image and extracted musical features!')
 
     parser.add_argument("--image-path",
-                        default='../data/fuzzed.png',
+                        default='../data/fuzzy-wuzzy.png',
                         type=str,
                         help="This is the path to your image!")
     parser.add_argument("--features-path",
@@ -120,6 +120,8 @@ def main():
     # Bounding Boxes
     print("Finding Bounding Boxes")
     bounding_boxes = make_bounding_boxes(removed_staff_img)
+    
+    hough_circle_input(removed_staff_img, bounding_boxes, staff_dist, sheet_img)
 
     print("Bounding Boxes have been Found")
 

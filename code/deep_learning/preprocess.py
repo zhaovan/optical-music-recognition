@@ -93,6 +93,32 @@ class Dataset_Reader():
             self.load_image(folder, image, class_index)
             i += 1
 
+    def add_translation(self, image):
+        max_translation = 0.3
+        translation_percentage = np.random.randint(-1, 1) * (max_translation / 2)
+
+        height, width = image.shape
+        T = np.float32([[1, 0, width * translation_percentage], [0, 1, height * translation_percentage]]) 
+
+        return cv2.warpAffine(image, T, (width, height)) 
+
+    def add_noise(self, image):
+        noise_threshold = 0.5
+
+        if (np.random.randint(0, 1) < noise_threshold):
+            return skimage.util.random_noise(
+                    image, mode='gaussian')
+        else: 
+            return image
+
+    def add_blur(self, image):
+        blur_threshold = 0.5
+
+        if (np.random.randint(0, 1) < blur_threshold):
+            return gaussian(image)
+        else: 
+            return image
+
     def load_image(self, folder, image, class_index):
         image = skimage.img_as_float32(imageio.imread(
             self.path + "/" + folder + "/" + image))
@@ -111,9 +137,9 @@ class Dataset_Reader():
                 # cv2.waitKey(0)
                 # cv2.destroyAllWindows()
 
-                noisy_image = skimage.util.random_noise(
-                    clean_image, mode='gaussian')
-                blurry_boi = gaussian(noisy_image)
+                noisy_image = self.add_noise(clean_image)
+                blurry_boi = self.add_blur(noisy_image)
+                translated_image = self.add_translation(blurry_boi)
 
                 # random_shift_y = np.random.randint(-70, 70)
                 # random_shift_x = np.random.randint(-35, 35)

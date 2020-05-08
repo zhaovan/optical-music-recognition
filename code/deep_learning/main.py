@@ -31,7 +31,8 @@ def train(model, datasets):
                          datasets.test_annotations),
         epochs=model.epochs,
         batch_size=model.batch_size,  # none for right now
-        callbacks=callback_list
+        callbacks=callback_list,
+        shuffle=True
     )
 
 

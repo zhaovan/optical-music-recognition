@@ -15,7 +15,7 @@ class NoteClassificationModel(tf.keras.Model):
     def __init__(self, number_classes):
         super(NoteClassificationModel, self).__init__()
 
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=1e-5)
 
         self.number_classes = number_classes
 
@@ -27,7 +27,7 @@ class NoteClassificationModel(tf.keras.Model):
 
         # Follows implementation similar to deepscores model: conv, relu, maxpool, dropout
         self.architecture = [
-            Conv2D(256, 11, 1, padding="same", activation="relu"),
+            Conv2D(32, 11, 1, padding="same", activation="relu"),
             MaxPool2D(3, padding="same"),
 
             # Set of layers 2
@@ -52,7 +52,7 @@ class NoteClassificationModel(tf.keras.Model):
             # Two dense layers
             # Dropout(self.dropout_rate),
             #Dense(128, activation="relu"),
-            Dense(512, activation="relu"),
+            Dense(128, activation="relu"),
             Dropout(self.dropout_rate),
             Dense(self.number_classes, activation="softmax")
         ]

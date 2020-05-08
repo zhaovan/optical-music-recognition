@@ -203,9 +203,9 @@ def main():
 
         label = str((class_names[1])[np.argmax(layer)])
         print(label)
-        cv2.imshow(label, resized_img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        # cv2.imshow(label, resized_img)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
 
     features = create_features(classified_list, class_names, bounding_boxes)
     # Feature Matching

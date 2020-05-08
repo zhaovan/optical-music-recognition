@@ -6,8 +6,6 @@ from tensorflow.keras.layers import \
 from preprocess import Dataset_Reader
 from model import NoteClassificationModel
 
-from vgg_model import NoteClassificationModel_Vgg4
-
 import argparse
 import pickle
 import numpy as np

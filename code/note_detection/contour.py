@@ -17,7 +17,7 @@ def make_bounding_boxes(image):
     # cv2.imshow('Edge', edge_detected_image)
     # cv2.waitKey(0)
 
-    _, contours, _ = cv2.findContours(
+    contours, _ = cv2.findContours(
         edge_detected_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     drawing = raw_image.copy()

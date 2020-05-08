@@ -55,13 +55,13 @@ def hough_circle(height):
 # height: height of notes
 # simg: staff removed image
 def hough_circle_input(img, bb, height, simg):
-    fig, ax = plt.subplots(1)
-    ax.imshow(simg, cmap='gray_r')
-    for i in range(bb.shape[0]):
-        rect = patches.Rectangle((bb[i, 0], bb[i, 1]), bb[i, 2],
-                                 bb[i, 3], linewidth=1, edgecolor='r', facecolor='none')
-        ax.add_patch(rect)
-    plt.show()
+    # fig, ax = plt.subplots(1)
+    # ax.imshow(simg, cmap='gray_r')
+    # for i in range(bb.shape[0]):
+    #     rect = patches.Rectangle((bb[i, 0], bb[i, 1]), bb[i, 2],
+    #                              bb[i, 3], linewidth=1, edgecolor='r', facecolor='none')
+    #     ax.add_patch(rect)
+    # plt.show()
 
 
     for i in range(len(bb)):

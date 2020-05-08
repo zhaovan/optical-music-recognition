@@ -40,6 +40,32 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 
+def dl_classification(model, img, class_names, bounding_boxes):
+    classified_list = []
+    new_img = 1 - img
+    for i in range(len(bounding_boxes)):
+        x, y, w, h = bounding_boxes[i]
+        center_x = int(x + 0.5 * w)
+        center_y = int(y + 0.5 * h)
+        
+        resized_shape = (220, 120)
+        block_img = new_img[(center_y - 110):(center_y +
+                                              110), (center_x - 60):(center_x + 60)]
+        if not (block_img.shape == resized_shape):
+            continue
+
+        boxed_image = tf.Variable(block_img, dtype=tf.float32)
+
+        reshaped_img = tf.reshape(
+            boxed_image, [-1, resized_shape[0], resized_shape[1], 1])
+
+        layer = model.call(reshaped_img)
+
+        classified_list = np.append(classified_list, np.argmax(layer))
+
+    return classified_list
+
+
 def circles_to_features(circles):
     features = []
     circles = circles[0]
@@ -59,11 +85,7 @@ def create_features(classified_elements, class_names, bounding_boxes):
         avg_x = (x + w) // 2
         avg_y = (y+h) // 2
         class_index = classified_elements[i]
-        # print(class_index_1)
         class_name = str((class_names[1])[class_index])
-        # class_name = str(class_index)
-        # print(class_name)
-        # print("Second classes", class_name2)
         feature_list.append((avg_x, avg_y, 0.25, class_name))
 
     return np.array(feature_list)
@@ -85,9 +107,14 @@ def command_line_args():
                         action="store_true",
                         help="This is a variable representing whether to visualize results or not!")
 
+    parser.add_argument("--feature-creator",
+                        default="hough_circle",
+                        type=str,
+                        help="Use hough_circle or cnn for feature matching")
+
     parser.add_argument(
         "--load-checkpoint",
-        default="./deep_learning/weights.e10-acc0.9942.h5",
+        default=None,
         help='''Path to model checkpoint file (should end with the
         extension .h5). Checkpoints are automatically saved when you
         train your model. If you want to continue training from where
@@ -101,8 +128,8 @@ def main():
 
     # The current image to process
     sheet_img = process_image(args.image_path)
-
     staff_lines = detect_staff_lines(sheet_img)
+
     print("Number of staffs: " + str(staff_lines.shape))
 
     # A [# of features x 4] array holding all of the features for the image
@@ -121,99 +148,42 @@ def main():
     print("Finding Bounding Boxes")
     bounding_boxes = make_bounding_boxes(removed_staff_img)
     
-    hough_circle_input(removed_staff_img, bounding_boxes, staff_dist, sheet_img)
+    # hough_circle_input(removed_staff_img, bounding_boxes, staff_dist, sheet_img)
 
     print("Bounding Boxes have been Found")
 
-    fig, ax = plt.subplots(1)
-    ax.imshow(sheet_img, cmap='gray_r')
-    for i in range(bounding_boxes.shape[0]):
-        rect = patches.Rectangle((bounding_boxes[i, 0], bounding_boxes[i, 1]), bounding_boxes[i, 2],
-                                 bounding_boxes[i, 3], linewidth=1, edgecolor='r', facecolor='none')
-        ax.add_patch(rect)
+
+    # Uncomment this if you want to look at your bounding boxes
+
+    # fig, ax = plt.subplots(1)
+    # ax.imshow(sheet_img, cmap='gray_r')
+    # for i in range(bounding_boxes.shape[0]):
+    #     rect = patches.Rectangle((bounding_boxes[i, 0], bounding_boxes[i, 1]), bounding_boxes[i, 2],
+    #                              bounding_boxes[i, 3], linewidth=1, edgecolor='r', facecolor='none')
+    #     ax.add_patch(rect)
     # plt.show()
 
     # DL Model Classification
-    # model = NoteClassificationModel(26)
-    model = NoteClassificationModel(7)
+    
+    class_names = pa.read_csv(
+        "./deep_learning/dataset/class_names.csv", header=None)
+
+    num_classes = len(class_names)
+
+    model = NoteClassificationModel(num_classes)
     model(tf.keras.Input(
         shape=(220, 120, 1)))
     model.load_weights(args.load_checkpoint)
 
-    classified_list = []
 
-    class_names = pa.read_csv(
-        "./deep_learning/dataset/class_names.csv", header=None)
 
-    print(class_names[1])
     print("DL Classification")
+    if (args.feature_creator == "cnn"):
+        classified_list = dl_classification(model, sheet_img, class_names, bounding_boxes)
+        features = create_features(classified_list, class_names, bounding_boxes)
 
-    print(len(bounding_boxes))
-    for i in range(len(bounding_boxes)):
-        print(i)
-        x, y, w, h = bounding_boxes[i]
 
-        center_x = int(x + 0.5 * w)
-        center_y = int(y + 0.5 * h)
-
-        new_img = 1 - sheet_img
-
-        resized_shape = (220, 120)
-        # resized_ratio = (resized_shape[0] / resized_shape[1])
-        block_img = new_img[(center_y - 110):(center_y +
-                                              110), (center_x - 60):(center_x + 60)]
-        if not (block_img.shape == resized_shape):
-            continue
-
-        # ratio = h / w
-        # if (ratio > resized_ratio):
-        #     new_height = resized_shape[0]
-        #     new_width = np.round(w * (resized_shape[0] / h))
-        #     width_padding = np.absolute(
-        #         new_width - resized_shape[1]).astype(int)
-        #     resized_img = skimage.transform.resize(
-        #         resized_img, (new_height, new_width))
-        #     resized_img = skimage.util.pad(
-        #         resized_img, ((0, 0), (width_padding // 2, width_padding - width_padding // 2)))
-        # else:
-        #     new_width = resized_shape[1]
-        #     new_height = np.round(h * (resized_shape[1] / h))
-        #     height_padding = np.absolute(
-        #         new_height - resized_shape[0]).astype(int)
-        #     resized_img = skimage.transform.resize(
-        #         resized_img, (new_height, new_width))
-        #     resized_img = skimage.util.pad(resized_img, ((
-        #         height_padding // 2, height_padding - height_padding // 2), (0, 0)))
-
-        # resized_img = skimage.transform.resize(
-        #     block_img, resized_shape)
-
-        boxed_image = tf.Variable(block_img, dtype=tf.float32)
-
-        reshaped_img = tf.reshape(
-            boxed_image, [-1, resized_shape[0], resized_shape[1], 1])
-
-        # print(reshaped_img.shape)
-
-        layer = model.call(reshaped_img)
-        #index_2 = np.argmax(np.delete(layer, np.argmax(layer)))
-        classified_list = np.append(classified_list, np.argmax(layer))
-        # print(np.argmax(layer))
-        # print(np.argmax(np.delete(layer, classified_list[i])))
-
-        # SEE THE IMAGE AND ALSO WHAT THE NETWORK THOUGHT
-
-        label = str((class_names[1])[np.argmax(layer)])
-        print(label)
-        # cv2.imshow(label, resized_img)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
-
-    features = create_features(classified_list, class_names, bounding_boxes)
     # Feature Matching
-
-    print(features)
-
     matched_staffs = find_feature_staffs(features, staff_lines)
     print("Matched features to staffs.")
 

@@ -31,27 +31,26 @@ class NoteClassificationModel(tf.keras.Model):
             MaxPool2D(3, padding="same"),
 
             # Set of layers 2
-            # Conv2D(128, 3, 1, padding="same", activation="relu"),
-            # MaxPool2D(2, padding="same"),
+            Conv2D(128, 3, 1, padding="same", activation="relu"),
+            MaxPool2D(2, padding="same"),
 
-            # # Set of layers 3
-            # Conv2D(128, 3, 1, padding="same", activation="relu"),
-            # MaxPool2D(2, padding="same"),
+            # Set of layers 3
+            Conv2D(128, 3, 1, padding="same", activation="relu"),
+            MaxPool2D(2, padding="same"),
 
-            # # set of layers 4
-            # Conv2D(256, 3, 1, padding="same", activation="relu"),
-            # MaxPool2D(2, padding="same"),
+            # set of layers 4
+            Conv2D(256, 3, 1, padding="same", activation="relu"),
+            MaxPool2D(2, padding="same"),
 
-            # # Set of layers
-            # Conv2D(64, 3, 1, padding="same", activation="relu"),
-            # MaxPool2D(2, padding="same"),
-            # Dropout(self.dropout_rate),
+            # Set of layers
+            Conv2D(64, 3, 1, padding="same", activation="relu"),
+            MaxPool2D(2, padding="same"),
+            Dropout(self.dropout_rate),
 
             # Flattens
             Flatten(),
             # Two dense layers
             # Dropout(self.dropout_rate),
-            #Dense(128, activation="relu"),
             Dense(128, activation="relu"),
             Dropout(self.dropout_rate),
             Dense(self.number_classes, activation="softmax")

@@ -1,7 +1,8 @@
 import numpy as np
 import cv2
 
-
+# creates contours around notes and returns the coordinates of rectangle bounding
+# said objects
 def make_bounding_boxes(image):
     raw_image = image
 

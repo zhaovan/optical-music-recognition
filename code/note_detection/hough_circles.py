@@ -22,30 +22,31 @@ def hough_circle(height):
     # edges
     edge_detected_image = cv2.Canny(gray, 75, 200)
 
-    cv2.imshow("Detected Circle", edge_detected_image)
-    cv2.waitKey(0)
+    # cv2.imshow("Detected Circle", edge_detected_image)
+    # cv2.waitKey(0)
 
     # returns all circles
     detected_circles = cv2.HoughCircles(edge_detected_image,
                                         cv2.HOUGH_GRADIENT, 1, 41, param1=100,
                                         param2=9, minRadius=height - 2, maxRadius=height + 4)
 
-    # draw circles that are detected
-    # if detected_circles is not None:
+    #draw circles that are detected
+    if detected_circles is not None:
 
-    #     # Convert the circle parameters a, b and r to integers.
-    #     detected_circles = np.uint16(np.around(detected_circles))
+        # Convert the circle parameters a, b and r to integers.
+        detected_circles = np.uint16(np.around(detected_circles))
 
-    #     for pt in detected_circles[0, :]:
-    #         a, b, r = pt[0], pt[1], pt[2]
+        # for pt in detected_circles[0, :]:
+        #     a, b, r = pt[0], pt[1], pt[2]
 
-    #         # Draw the circumference of the circle.
-    #         cv2.circle(img, (a, b), r, (0, 255, 0), 2)
+        #     # Draw the circumference of the circle.
+        #     cv2.circle(img, (a, b), r, (0, 255, 0), 2)
 
-    #         # Draw a small circle (of radius 1) to show the center.
-    #         cv2.circle(img, (a, b), 1, (0, 0, 255), 3)
-    #         cv2.imshow("Detected Circle", img)
-    #         cv2.waitKey(0)
+        #     # Draw a small circle (of radius 1) to show the center.
+        #     cv2.circle(img, (a, b), 1, (0, 0, 255), 3)
+        
+        # cv2.imshow("Detected Circle", img)
+        # cv2.waitKey(0)
 
     return detected_circles
 

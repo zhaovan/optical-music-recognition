@@ -8,6 +8,7 @@ import tensorflow as tf
 import sys
 import skimage
 import matplotlib
+matplotlib.use('macosx')
 from matplotlib import patches
 from matplotlib import pyplot as plt
 from skimage import io, img_as_ubyte, img_as_float32, color, util
@@ -75,10 +76,8 @@ def circles_to_features(circles):
 
     return np.array(features)
 
-
 def create_features(classified_elements, class_names, bounding_boxes):
     feature_list = []
-    print(classified_elements)
 
     for i in range(len(classified_elements)):
         x, y, w, h = bounding_boxes[i]
@@ -90,11 +89,9 @@ def create_features(classified_elements, class_names, bounding_boxes):
 
     return np.array(feature_list)
 
-
 def command_line_args():
     parser = argparse.ArgumentParser(
         description='A program that creates a MIDI file from an image and extracted musical features!')
-
     parser.add_argument("--image-path",
                         default='../data/fuzzy-wuzzy.png',
                         type=str,
@@ -106,19 +103,16 @@ def command_line_args():
     parser.add_argument("--no-vis",
                         action="store_true",
                         help="This is a variable representing whether to visualize results or not!")
-
     parser.add_argument("--feature-creator",
                         default="hough_circle",
                         type=str,
-                        help="Use hough_circle or cnn for feature matching")
-
-    parser.add_argument(
-        "--load-checkpoint",
-        default=None,
-        help='''Path to model checkpoint file (should end with the
-        extension .h5). Checkpoints are automatically saved when you
-        train your model. If you want to continue training from where
-        you left off, this is how you would load your weights.''')
+                        help="Use 'hough_circle' or 'cnn' for feature matching!")
+    parser.add_argument("--load-checkpoint",
+                        default=None,
+                        help='''Path to model checkpoint file (should end with the
+                        extension .h5). Checkpoints are automatically saved when you
+                        train your model. If you want to continue training from where
+                        you left off, this is how you would load your weights.''')
 
     return parser.parse_args()
 
@@ -130,8 +124,6 @@ def main():
     sheet_img = process_image(args.image_path)
     staff_lines = detect_staff_lines(sheet_img)
 
-    print("Number of staffs: " + str(staff_lines.shape))
-
     # A [# of features x 4] array holding all of the features for the image
     truth_features = load_features(args.features_path)
 
@@ -140,28 +132,30 @@ def main():
     removed_staff_img = staff_removal(args.image_path, staff_dist)
     save_image("../results/processed.png", removed_staff_img)
 
+    print("Detected and removed staffs.")
+
     # Hough Detection
     detected_circles = hough_circle(int(staff_dist))
     features = circles_to_features(detected_circles)
 
     # Bounding Boxes
-    print("Finding Bounding Boxes")
+    print("Detect circles using HCT.")
     bounding_boxes = make_bounding_boxes(removed_staff_img)
     
     # hough_circle_input(removed_staff_img, bounding_boxes, staff_dist, sheet_img)
 
-    print("Bounding Boxes have been Found")
-
+    print("Found bounding boxes.")
 
     # Uncomment this if you want to look at your bounding boxes
 
-    # fig, ax = plt.subplots(1)
-    # ax.imshow(sheet_img, cmap='gray_r')
-    # for i in range(bounding_boxes.shape[0]):
-    #     rect = patches.Rectangle((bounding_boxes[i, 0], bounding_boxes[i, 1]), bounding_boxes[i, 2],
-    #                              bounding_boxes[i, 3], linewidth=1, edgecolor='r', facecolor='none')
-    #     ax.add_patch(rect)
-    # plt.show()
+    if (not(args.no_vis)):
+        fig, ax = plt.subplots(1)
+        ax.imshow(sheet_img, cmap='gray_r')
+        for i in range(bounding_boxes.shape[0]):
+            rect = patches.Rectangle((bounding_boxes[i, 0], bounding_boxes[i, 1]), bounding_boxes[i, 2],
+                                    bounding_boxes[i, 3], linewidth=1, edgecolor='r', facecolor='none')
+            ax.add_patch(rect)
+        plt.show()
 
     # DL Model Classification
     
@@ -170,18 +164,16 @@ def main():
 
     num_classes = len(class_names)
 
-    model = NoteClassificationModel(num_classes)
-    model(tf.keras.Input(
-        shape=(220, 120, 1)))
-    model.load_weights(args.load_checkpoint)
-
-
-
-    print("DL Classification")
     if (args.feature_creator == "cnn"):
+        model = NoteClassificationModel(num_classes)
+        model(tf.keras.Input(
+            shape=(220, 120, 1)))
+        model.load_weights(args.load_checkpoint)
+
         classified_list = dl_classification(model, sheet_img, class_names, bounding_boxes)
         features = create_features(classified_list, class_names, bounding_boxes)
 
+        print("Used CNN to classify features.")
 
     # Feature Matching
     matched_staffs = find_feature_staffs(features, staff_lines)

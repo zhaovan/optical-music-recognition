@@ -22,8 +22,8 @@ def hough_circle(height):
     # edges
     edge_detected_image = cv2.Canny(gray, 75, 200)
 
-    cv2.imshow("Detected Circle", edge_detected_image)
-    cv2.waitKey(0)
+    # cv2.imshow("Detected Circle", edge_detected_image)
+    # cv2.waitKey(0)
 
     # returns all circles
     detected_circles = cv2.HoughCircles(edge_detected_image,

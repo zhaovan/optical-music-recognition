@@ -8,7 +8,7 @@ from skimage import color, util, filters, feature
 from postprocessing.image_operations import load_image
 
 im_size = (850, 1100)
-threshold = im_size[0] * .5
+threshold = im_size[0] * .2
 
 def process_image(path):
     image = load_image(path, as_gray=True)
